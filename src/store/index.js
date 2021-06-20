@@ -7,9 +7,19 @@ export default new Vuex.Store({
   state: {
     servers: []
   },
-  mutations: {
+  mutations: 
+  {
+    addServer(state, server) 
+    {
+      state.servers.push(server)
+    }
   },
-  actions: {
+  actions: 
+  {
+    addServer(context, serverName)
+    {
+      context.commit('addServer', {name: serverName})
+    }
   },
   modules: {
   }

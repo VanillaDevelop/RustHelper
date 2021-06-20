@@ -32,4 +32,9 @@ body
   font-family: 'Raleway';
   background-color:#1e2020 !important;
 }
+
+.text-muted
+{
+  color:white !important;
+}
 </style>

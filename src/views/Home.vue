@@ -55,29 +55,58 @@
       </b-col>
     </b-row>
 
-    <div v-if="this.countServers == 0">
-    <h3 class="text-center">Getting started</h3>
     <b-row>
       <b-col lg="6" offset-lg="3">
-        <p class="text-justify">
-          To get started, add a new server to your server list using the form
-          below. Don't worry about the name - it's just a nickname for you to
-          remember the server by. You will get the option of generating a map
-          image for this server later.
-        </p>
+        <div v-if="this.countServers == 0">
+          <h3 class="text-center">Getting started</h3>
+          <p class="text-justify">
+            To get started, add a new server to your server list using the form
+            below. Don't worry about the name - it's just a nickname for you to
+            remember the server by. You will get the option of generating a map
+            image for this server later.
+          </p>
+        </div>
+        <h5>Add a new server</h5>
+        <b-form>
+          <b-form-group
+            label="Server Name"
+            label-for="input-server"
+            description="Input a nickname for you to remember this server by"
+          >
+            <b-form-input
+              id="input-server"
+              type="text"
+              placeholder="Enter Server Nickname"
+              required
+              :value="serverName"
+            ></b-form-input>
+          </b-form-group>
+          <b-button variant="light" @click="addServer()"
+            >Submit</b-button
+          >
+        </b-form>
       </b-col>
     </b-row>
-    </div>
   </b-container>
 </template>
 
 <script>
 export default {
   name: "Home",
+  data: function () {
+    return {
+      serverName: "",
+    };
+  },
   computed: {
     countServers() {
-      return this.$store.state.servers.length
-    }
-  }
+      return this.$store.state.servers.length;
+    },
+  },
+  methods: {
+    addServer() {
+      return this.$store.dispatch("addServer", this.serverName);
+    },
+  },
 };
 </script>
