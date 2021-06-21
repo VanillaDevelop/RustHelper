@@ -57,13 +57,23 @@
 
     <b-row>
       <b-col lg="6" offset-lg="3">
-        <div v-if="this.countServers == 0">
+        <div v-if="this.serverCount == 0">
           <h3 class="text-center">Getting started</h3>
           <p class="text-justify">
             To get started, add a new server to your server list using the form
             below. Don't worry about the name - it's just a nickname for you to
             remember the server by. You will get the option of generating a map
             image for this server later.
+          </p>
+        </div>
+        <div v-else>
+          <h3 class="text-center">Playing on multiple servers?</h3>
+          <p class="text-justify">
+            You have already added a server, but you can manage multiple servers
+            at once, which all have their unique state. To add another server,
+            simply enter the server name below and click on submit. Otherwise,
+            select your desired server in the top right corner to get started
+            using the tool.
           </p>
         </div>
         <h5>Add a new server</h5>
@@ -78,12 +88,10 @@
               type="text"
               placeholder="Enter Server Nickname"
               required
-              :value="serverName"
+              v-model="serverName"
             ></b-form-input>
           </b-form-group>
-          <b-button variant="light" @click="addServer()"
-            >Submit</b-button
-          >
+          <b-button variant="light" @click="addServer()">Submit</b-button>
         </b-form>
       </b-col>
     </b-row>
@@ -91,6 +99,8 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
+
 export default {
   name: "Home",
   data: function () {
@@ -99,13 +109,12 @@ export default {
     };
   },
   computed: {
-    countServers() {
-      return this.$store.state.servers.length;
-    },
+    ...mapGetters(["serverCount"]),
   },
   methods: {
     addServer() {
-      return this.$store.dispatch("addServer", this.serverName);
+      this.$store.dispatch("addServer", this.serverName);
+      this.serverName = "";
     },
   },
 };
