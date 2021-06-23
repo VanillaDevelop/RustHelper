@@ -6,12 +6,15 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     servers: [],
-    selectedServerIndex: -1
+    selectedServerIndex: -1,
+    maxServerId: -1
   },
   mutations: 
   {
     addServer(state, server) 
     {
+      state.maxServerId += 1
+      server.id = state.maxServerId
       state.servers.push(server)
     },
     setServerId(state, id)
@@ -23,7 +26,7 @@ export default new Vuex.Store({
   {
     addServer(context, serverName)
     {
-      context.commit('addServer', {name: serverName, id: this.state.servers.length})
+      context.commit('addServer', {name: serverName})
     },
     setSelectedServer(context, serverId)
     {
@@ -35,7 +38,7 @@ export default new Vuex.Store({
       if(state.selectedServerIndex < 0)
         return "None"
       else
-        return state.servers[state.selectedServerIndex].name
+        return state.servers.find((x) => x.id == state.selectedServerIndex).name
     },
     serverCount: state => { 
       return state.servers.length;
