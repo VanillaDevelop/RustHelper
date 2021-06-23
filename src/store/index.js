@@ -13,6 +13,10 @@ export default new Vuex.Store({
     addServer(state, server) 
     {
       state.servers.push(server)
+    },
+    setServerId(state, id)
+    {
+      state.selectedServerIndex = id
     }
   },
   actions: 
@@ -20,6 +24,10 @@ export default new Vuex.Store({
     addServer(context, serverName)
     {
       context.commit('addServer', {name: serverName, id: this.state.servers.length})
+    },
+    setSelectedServer(context, serverId)
+    {
+      context.commit('setServerId', serverId)
     }
   },
   getters: {

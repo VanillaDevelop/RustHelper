@@ -19,8 +19,8 @@
         </b-collapse>
 
         <b-navbar-nav class="ml-auto" v-if="this.serverCount > 0">
-          <b-nav-item-dropdown :text="'Currently Selected Server (' + this.currentServerName + ')'" right>
-            <b-dropdown-item :key="server.id" v-for="server in servers">{{server.name}}</b-dropdown-item>
+          <b-nav-item-dropdown :text="'Currently Selected Server (' + this.currentServerName + ')'" right >
+            <b-dropdown-item @click="setActiveServer(server.id)" :key="server.id" v-for="server in servers">{{server.name}}</b-dropdown-item>
           </b-nav-item-dropdown>
         </b-navbar-nav>
       </b-navbar>
@@ -51,13 +51,19 @@ body {
 <script>
 import { mapGetters, mapState } from "vuex";
 
-export default {
+export default 
+{
   computed: {
     ...mapGetters([
       "currentServerName",
       "serverCount"
     ]),
     ...mapState(['servers'])
-  },
+  },  
+  methods: {
+    setActiveServer(serverId) {
+      this.$store.dispatch("setSelectedServer", serverId);
+    }
+  }
 };
 </script>
