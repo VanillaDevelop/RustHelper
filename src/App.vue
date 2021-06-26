@@ -46,6 +46,10 @@ body {
 .text-muted {
   color: white !important;
 }
+
+.modal-content {
+  background-color: #ce422b !important;
+}
 </style>
 
 <script>
