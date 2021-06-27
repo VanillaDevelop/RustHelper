@@ -22,7 +22,8 @@
       </b-row>
     </div>
     <div v-else>
-      <server-display v-for="server in this.servers" :serverName="server.name" :key="server.id"/>
+      <h4 class="text-center mb-4">Your servers</h4>
+      <server-display v-for="server in this.servers" :server="server" :key="server.id" :isActive="server.id == selectedServerIndex"/>
     </div>
 
     <b-modal id="modal-add-server" title="Add new server">
@@ -71,7 +72,7 @@ export default
   },
   computed: {
     ...mapGetters(["serverCount"]),
-    ...mapState(["servers"])
+    ...mapState(["servers", "selectedServerIndex"])
   },
   methods: {
     addServer() {
