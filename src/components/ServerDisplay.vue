@@ -6,8 +6,8 @@
         @click="setActiveServer(server.id)">
         <span class="server-name">{{ server.name }}</span>
         <span :class="isActive ? 'deleteButtonActive' : 'deleteButton'"
-          ><b-button variant="danger"
-            @click.stop=""><b-icon-trash-fill /> Delete Server</b-button
+          ><b-button variant="danger" v-b-modal.modal-remove-server
+            @click.stop="$emit('set-server-delete-id')"><b-icon-trash-fill /> Delete Server</b-button
           ></span>
       </div>
     </b-col>

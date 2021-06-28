@@ -13,13 +13,19 @@ export default new Vuex.Store({
   {
     addServer(state, server) 
     {
-      state.maxServerId += 1
-      server.id = state.maxServerId
-      state.servers.push(server)
+      state.maxServerId += 1;
+      server.id = state.maxServerId;
+      state.servers.push(server);
     },
     setServerId(state, id)
     {
-      state.selectedServerIndex = id
+      state.selectedServerIndex = id;
+    },
+    removeServer(state, id)
+    {
+      let serverById = state.servers.find((x) => x.id == id);
+      state.servers.splice(state.servers.indexOf(serverById), 1);
+      state.selectedServerIndex = -1;
     }
   },
   actions: 
@@ -27,6 +33,10 @@ export default new Vuex.Store({
     addServer(context, serverName)
     {
       context.commit('addServer', {name: serverName})
+    },
+    deleteServer(context, serverId)
+    {
+      context.commit('removeServer', serverId)
     },
     setSelectedServer(context, serverId)
     {

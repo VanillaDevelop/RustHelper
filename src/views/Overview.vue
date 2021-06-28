@@ -23,7 +23,13 @@
     </div>
     <div v-else>
       <h4 class="text-center mb-4">Your servers</h4>
-      <server-display v-for="server in this.servers" :server="server" :key="server.id" :isActive="server.id == selectedServerIndex"/>
+      <server-display
+        v-for="server in this.servers"
+        :server="server"
+        :key="server.id"
+        :isActive="server.id == selectedServerIndex"
+        @set-server-delete-id="serverDeletionId = server.id"
+      />
     </div>
 
     <b-modal id="modal-add-server" title="Add new server">
@@ -44,41 +50,68 @@
       </b-form>
       <template #modal-footer="{ close }">
         <!-- Emulate built in modal footer ok and cancel button actions -->
-        <b-button variant="light" @click="addServer(); close()">Submit</b-button>
+        <b-button
+          variant="light"
+          @click="
+            addServer();
+            close();
+          "
+          >Submit</b-button
+        >
+      </template>
+    </b-modal>
+
+    <b-modal id="modal-remove-server" title="Remove Server">
+      <p>Are you sure you wish to delete this server? This action cannot be undone.</p>
+      <template #modal-footer="{ close }">
+        <!-- Emulate built in modal footer ok and cancel button actions -->
+        <b-button
+          variant="light"
+          @click="
+            deleteServer();
+            close();
+          "
+          >Delete</b-button
+        >
       </template>
     </b-modal>
   </b-container>
 </template>
 
 <style>
-.modal-header button
-{
-  color:white;
+.modal-header button {
+  color: white;
 }
 </style>
 
 <script>
 import { mapGetters, mapState } from "vuex";
-import ServerDisplay from '../components/ServerDisplay.vue';
+import ServerDisplay from "../components/ServerDisplay.vue";
 
-export default 
-{
+export default {
   name: "Overview",
-  components: {ServerDisplay},
-  data: function() {
+  components: { ServerDisplay },
+  data: function () {
     return {
       serverName: "",
+      serverDeletionId: -1
     };
   },
   computed: {
     ...mapGetters(["serverCount"]),
-    ...mapState(["servers", "selectedServerIndex"])
+    ...mapState(["servers", "selectedServerIndex"]),
   },
   methods: {
     addServer() {
       this.$store.dispatch("addServer", this.serverName);
       this.serverName = "";
     },
+    deleteServer() {
+      if(this.serverDeletionId != -1)
+        this.$store.dispatch("deleteServer", this.serverDeletionId);
+      
+      this.serverDeletionId = -1;
+    }
   },
 };
 </script>
