@@ -15,12 +15,29 @@
           <b-navbar-nav>
             <b-nav-item to="/overview">Overview</b-nav-item>
             <b-nav-item to="/about">About</b-nav-item>
+            <b-nav-item to="/about" v-if="selectedServerIndex != -1"
+              >Furnace Tracking</b-nav-item
+            >
+            <b-nav-item to="/about" v-if="selectedServerIndex != -1"
+              >Map</b-nav-item
+            >
+            <b-nav-item to="/about" v-if="selectedServerIndex != -1"
+              >Build Cost Calculator</b-nav-item
+            >
           </b-navbar-nav>
         </b-collapse>
 
         <b-navbar-nav class="ml-auto" v-if="this.serverCount > 0">
-          <b-nav-item-dropdown :text="'Currently Selected Server (' + this.currentServerName + ')'" right >
-            <b-dropdown-item @click="setActiveServer(server.id)" :key="server.id" v-for="server in servers">{{server.name}}</b-dropdown-item>
+          <b-nav-item-dropdown
+            :text="'Currently Selected Server (' + this.currentServerName + ')'"
+            right
+          >
+            <b-dropdown-item
+              @click="setActiveServer(server.id)"
+              :key="server.id"
+              v-for="server in servers"
+              >{{ server.name }}</b-dropdown-item
+            >
           </b-nav-item-dropdown>
         </b-navbar-nav>
       </b-navbar>
@@ -55,19 +72,15 @@ body {
 <script>
 import { mapGetters, mapState } from "vuex";
 
-export default 
-{
+export default {
   computed: {
-    ...mapGetters([
-      "currentServerName",
-      "serverCount"
-    ]),
-    ...mapState(['servers'])
-  },  
+    ...mapGetters(["currentServerName", "serverCount"]),
+    ...mapState(["servers", "selectedServerIndex"]),
+  },
   methods: {
     setActiveServer(serverId) {
       this.$store.dispatch("setSelectedServer", serverId);
-    }
-  }
+    },
+  },
 };
 </script>
