@@ -27,7 +27,7 @@
           </b-navbar-nav>
         </b-collapse>
 
-        <b-navbar-nav class="ml-auto" v-if="this.serverCount > 0">
+        <b-navbar-nav class="ml-auto server-selector" v-if="this.serverCount > 0">
           <b-nav-item-dropdown
             :text="'Currently Selected Server (' + this.currentServerName + ')'"
             right
@@ -66,6 +66,16 @@ body {
 
 .modal-content {
   background-color: #ce422b !important;
+}
+
+.server-selector {
+  display:none;
+}
+
+@media (min-width: 992px) {
+  .server-selector {
+    display:block;
+  }
 }
 </style>
 
