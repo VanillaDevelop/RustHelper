@@ -25,9 +25,25 @@
               >Build Cost Calculator</b-nav-item
             >
           </b-navbar-nav>
+          <b-navbar-nav
+            class="ml-auto server-selector-mobile"
+            v-if="this.serverCount > 0"
+          >
+            <b-nav-item-dropdown :text="this.currentServerName" right>
+              <b-dropdown-item
+                @click="setActiveServer(server.id)"
+                :key="server.id"
+                v-for="server in servers"
+                >{{ server.name }}</b-dropdown-item
+              >
+            </b-nav-item-dropdown>
+          </b-navbar-nav>
         </b-collapse>
 
-        <b-navbar-nav class="ml-auto server-selector" v-if="this.serverCount > 0">
+        <b-navbar-nav
+          class="ml-auto server-selector"
+          v-if="this.serverCount > 0"
+        >
           <b-nav-item-dropdown
             :text="'Currently Selected Server (' + this.currentServerName + ')'"
             right
@@ -53,6 +69,7 @@
 body {
   background-color: #ce422b;
   color: white;
+  overflow-x:hidden;
 }
 
 #nav {
@@ -69,12 +86,17 @@ body {
 }
 
 .server-selector {
-  display:none;
+  display: none;
+}
+
+.server-selector-mobile {
+  display: block;
 }
 
 @media (min-width: 992px) {
   .server-selector {
-    display:block;
+    display: block;
+    display: none;
   }
 }
 </style>

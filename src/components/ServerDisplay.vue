@@ -1,10 +1,10 @@
 <template>
   <b-row class="mb-3">
-    <b-col offset-md="2" md="8">
+    <b-col offset-lg="2" lg="8">
       <div
         :class="['serverDisplay', isActive ? 'selectedServerDisplay' : '']"
         @click="setActiveServer(server.id)">
-        <span class="server-name">{{ server.name }}</span>
+        <span class="server-name">{{ this.abbreviatedServerNames()[this.index] }}</span>
         <span :class="isActive ? 'deleteButtonActive' : 'deleteButton'"
           ><b-button variant="danger" v-b-modal.modal-remove-server
             @click.stop="$emit('set-server-delete-id')"><b-icon-trash-fill /> Delete Server</b-button
@@ -15,13 +15,17 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
+
 export default {
   name: "ServerDisplay",
   props: {
     server: Object,
     isActive: Boolean,
+    index: Number
   },
   methods: {
+    ...mapGetters(["abbreviatedServerNames"]),
     setActiveServer(serverId) {
       this.$store.dispatch("setSelectedServer", serverId);
     },

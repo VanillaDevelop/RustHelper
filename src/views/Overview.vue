@@ -24,8 +24,9 @@
     <div v-else>
       <h4 class="text-center mb-4">Your servers</h4>
       <server-display
-        v-for="server in this.servers"
+        v-for="(server, index) in this.servers"
         :server="server"
+        :index="index"
         :key="server.id"
         :isActive="server.id == selectedServerIndex"
         @set-server-delete-id="serverDeletionId = server.id"

@@ -18,7 +18,7 @@
 
     <h3 class="text-center">Features of the Rust Helper</h3>
     <b-row class="mb-5">
-      <b-col>
+      <b-col lg="4">
         <p class="text-center h2">
           <b-icon icon="droplet-half"></b-icon>
         </p>
@@ -30,7 +30,7 @@
           production line going.
         </p>
       </b-col>
-      <b-col>
+      <b-col lg="4">
         <p class="text-center h2">
           <b-icon icon="map"></b-icon>
         </p>
@@ -42,7 +42,7 @@
           looking 2 by 1 anymore.
         </p>
       </b-col>
-      <b-col>
+      <b-col lg="4">
         <p class="text-center h2">
           <b-icon icon="door-open"></b-icon>
         </p>
@@ -55,7 +55,7 @@
       </b-col>
     </b-row>
 
-    <b-row>
+    <b-row class="mb-5">
       <b-col lg="6" offset-lg="3">
         <div v-if="this.serverCount == 0">
           <h3 class="text-center">Getting started</h3>

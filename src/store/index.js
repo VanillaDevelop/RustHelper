@@ -32,7 +32,7 @@ export default new Vuex.Store({
   {
     addServer(context, serverName)
     {
-      context.commit('addServer', {name: serverName})
+      context.commit('addServer', {name: (serverName.length > 56) ? serverName.substring(0,56) : serverName})
     },
     deleteServer(context, serverId)
     {
@@ -44,11 +44,23 @@ export default new Vuex.Store({
     }
   },
   getters: {
-    currentServerName: state => {
+    abbreviatedServerNames: state => {
+      return state.servers.map(x => {
+        if (x.name.length > 25)
+        {
+            return (x.name.substring(0,20) + "...");
+        }
+        else
+          return x.name;
+      })
+    },
+    currentServerName: (state, getters) => {
       if(state.selectedServerIndex < 0)
         return "None"
       else
-        return state.servers.find((x) => x.id == state.selectedServerIndex).name
+      {
+        return getters.abbreviatedServerNames[state.servers.indexOf(state.servers.find((x) => x.id == state.selectedServerIndex))];
+      }
     },
     serverCount: state => { 
       return state.servers.length;
