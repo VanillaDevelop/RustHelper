@@ -15,7 +15,7 @@
           <b-navbar-nav>
             <b-nav-item to="/overview">Overview</b-nav-item>
             <b-nav-item to="/about">About</b-nav-item>
-            <b-nav-item to="/about" v-if="selectedServerIndex != -1"
+            <b-nav-item to="/furnaces" v-if="selectedServerIndex != -1"
               >Furnace Tracking</b-nav-item
             >
             <b-nav-item to="/about" v-if="selectedServerIndex != -1"
