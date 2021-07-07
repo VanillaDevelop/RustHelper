@@ -6,29 +6,44 @@
           <div class="mx-1">
             <b-dropdown
               id="dropdown-1"
-              text="Dropdown Button"
               class="m-md-2"
+              style="width: 80px; height: 40px"
               variant="light"
-              ><template slot="button-content">
-                <img :src="require('@/assets/wood.png')" width="30" />
+            >
+              <template slot="button-content">
+                <span v-if="selected[n - 1] == ''"> </span>
+                <span v-else>
+                  <img
+                    :src="require('@/assets/' + selected[n - 1] + '.png')"
+                    width="30"
+                  />
+                </span>
               </template>
+              <b-dropdown-item :key="''" @click="updateMaterial(n - 1, '')"
+                >None</b-dropdown-item
+              >
               <b-dropdown-item
-                ><img :src="require('@/assets/wood.png')" width="40"
-              /></b-dropdown-item>
-              <b-dropdown-item
-                ><img :src="require('@/assets/metal.png')" width="40"
-              /></b-dropdown-item>
-              <b-dropdown-item
-                ><img :src="require('@/assets/sulfur.png')" width="40"
+                v-for="material in materials"
+                :key="material"
+                @click="updateMaterial(n - 1, material)"
+                ><img
+                  :src="require('@/assets/' + material + '.png')"
+                  width="40"
               /></b-dropdown-item>
             </b-dropdown>
           </div>
           <div class="mx-1 mt-1">
             <b-form-input
-              v-model="text"
               placeholder="Qty."
-              style="width: 70px"
-            ></b-form-input>
+              style="width: 80px"
+              v-model="quantities[n - 1]"
+              :number="true"
+              type="number"
+              min="0"
+              max="1000"
+              step="1"
+              @change="fixQty(n - 1)"
+            />
           </div>
         </span>
         <span class="calculateButton"
@@ -44,10 +59,24 @@ export default {
   name: "FurnaceDisplay",
   data: () => {
     return {
-      materials: {
-        wood: "",
-      },
+      materials: ["wood", "metal", "sulfur", "hqm", "charcoal"],
+      selected: ["", "", "", "", ""],
+      quantities: [0, 0, 0, 0, 0],
     };
+  },
+  methods: {
+    updateMaterial(idx, material) {
+      this.$set(this.selected, idx, material);
+    },
+    fixQty(idx) {
+      if (this.quantities[idx] > 1000) {
+        this.$set(this.quantities, idx, 1000);
+      }
+      else if (this.quantities[idx] < 0) {
+        this.$set(this.quantities, idx, 0)
+      }
+      this.$set(this.quantities, idx, Math.trunc(this.quantities[idx]))
+    },
   },
 };
 </script>
@@ -71,6 +100,6 @@ export default {
 }
 
 .m-md-2 {
-    margin: 0 !important;
+  margin: 0 !important;
 }
 </style>
