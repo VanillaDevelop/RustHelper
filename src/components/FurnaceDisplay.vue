@@ -3,7 +3,7 @@
     <b-col offset-lg="3" lg="6">
       <div class="furnaceDisplay d-block pt-3">
         <div class="w-100 d-flex">
-          <span v-for="n in 5" :key="n">
+          <span v-for="n in 6" :key="n">
             <div class="mx-1">
               <b-dropdown
                 id="dropdown-1"
@@ -55,10 +55,17 @@
               <span v-for="(mat, idx) in output" :key="idx">
                 <span v-if="mat != ''">
                   <img :src="require('@/assets/' + mat + '.png')" width="30" />
+                  {{ output_quantities[idx] }}
                 </span>
               </span>
             </div>
-            <div class="alert alert-warning mt-2" v-if="result_type == 'failure'">
+            <div>
+              Output is reached after {{furnaceTime}}
+            </div>
+            <div
+              class="alert alert-warning mt-2"
+              v-if="result_type == 'failure'"
+            >
               <strong>Warning: </strong>{{ result }}
             </div>
           </div>
@@ -73,18 +80,35 @@ export default {
   name: "FurnaceDisplay",
   data: () => {
     return {
-      materials: ["wood", "metal", "sulfur", "hqm", "charcoal", "mfrags", "sfrags", "hqmfrags"],
+      materials: [
+        "wood",
+        "metal",
+        "sulfur",
+        "hqm",
+        "charcoal",
+        "mfrags",
+        "sfrags",
+        "hqmfrags",
+      ],
       transformations: {
         wood: "charcoal",
         metal: "mfrags",
         sulfur: "sfrags",
         hqm: "hqmfrags",
       },
-      selected: ["", "", "", "", ""],
-      quantities: [0, 0, 0, 0, 0],
-      output: ["", "", "", "", ""],
-      output_quantities: [0, 0, 0, 0, 0],
+      //wood cost to transform a source material into its byproduct
+      woodCost: {
+        wood: 4 / 3,
+        metal: 5,
+        sulfur: 2.5,
+        hqm: 10,
+      },
+      selected: ["", "", "", "", "", ""],
+      quantities: [0, 0, 0, 0, 0, 0],
+      output: ["", "", "", "", "", ""],
+      output_quantities: [0, 0, 0, 0, 0, 0],
       result: "",
+      fuelBurned: 0,
       result_type: "",
     };
   },
@@ -103,14 +127,21 @@ export default {
       this.processFurnace();
     },
     processFurnace() {
-
       //first, copy the slots and quantities from the input
       let output = [...this.selected];
       let output_qty = [...this.quantities];
 
       this.result_type = "success";
 
-      //second, reserve an output slot for every type of material if there is not one already
+      //get the max amount of fuel burned
+      let fuelBurned = 0;
+      for (let i = 0; i < 6; i++) {
+        if (output[i] == "wood" && output_qty[i] > fuelBurned) {
+          fuelBurned = output_qty[i];
+        }
+      }
+
+      //for each source material slot, get the quantity burned, reduce the input quantity, and increase the output quantity
       for (var i = 0; i < 5; i++) {
         let input = this.selected[i];
         if (
@@ -129,14 +160,42 @@ export default {
           } else {
             //add the byproduct to this index
             output[idx] = this.transformations[input];
+
+            //reduce the quantity by the amount burned
+            let burned = Math.round(fuelBurned / this.woodCost[input]);
+            if (input == "wood") burned = fuelBurned;
+            burned = burned > output_qty[i] ? output_qty[i] : burned;
+            output_qty[i] = output_qty[i] - burned;
+            output_qty[idx] = burned;
           }
+        } else if (Object.keys(this.transformations).indexOf(input) > -1) 
+        {
+          let outputslot = output.indexOf(this.transformations[input]);
+          output[outputslot] = this.transformations[input];
+
+          //reduce the quantity by the amount burned
+          let burned = Math.round(fuelBurned / this.woodCost[input]);
+          if (input == "wood") burned = fuelBurned;
+          burned = burned > output_qty[i] ? output_qty[i] : burned;
+          output_qty[i] = output_qty[i] - burned;
+          output_qty[outputslot] += burned;
         }
       }
 
       this.output_quantities = [...output_qty];
       this.output = [...output];
+      this.fuelBurned = fuelBurned;
     },
   },
+  computed:
+  {
+    furnaceTime()
+    {
+      var date = new Date(null)
+      date.setSeconds(this.fuelBurned * 2)
+      return date.toISOString().substr(11, 8)
+    }
+  }
 };
 </script>
 
@@ -145,7 +204,8 @@ export default {
   background-color: rgba(255, 0, 0, 0.452);
   border-radius: 10px;
   align-items: center;
-  padding: 15px 15px 10px 15px;
+  padding-left: 5px;
+  padding-bottom: 15px;
   display: flex;
 }
 

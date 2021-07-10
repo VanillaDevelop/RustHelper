@@ -1,6 +1,6 @@
 <template>
   <b-container>
-    <h1 class="text-center">Furnace Tracker</h1>
+    <h1 class="text-center">Furnace Calculator</h1>
     <h4 class="text-center">{{this.currentServerName}}</h4>
     <b-row>
         <b-col>
