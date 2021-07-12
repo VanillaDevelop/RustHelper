@@ -59,9 +59,7 @@
                 </span>
               </span>
             </div>
-            <div>
-              Output is reached after {{furnaceTime}}
-            </div>
+            <div>Output is reached after {{ furnaceTime }}</div>
             <div
               class="alert alert-warning mt-2"
               v-if="result_type == 'failure'"
@@ -91,10 +89,16 @@ export default {
         "hqmfrags",
       ],
       transformations: {
-        wood: "charcoal",
-        metal: "mfrags",
-        sulfur: "sfrags",
-        hqm: "hqmfrags",
+        'wood': "charcoal",
+        'metal': "mfrags",
+        'sulfur': "sfrags",
+        'hqm': "hqmfrags",
+      },
+      reverse_transformations: {
+        'charcoal': "wood",
+        'mfrags': "metal",
+        'sfrags': "sulfur",
+        'hqmfrags': "hqm",
       },
       //wood cost to transform a source material into its byproduct
       woodCost: {
@@ -127,75 +131,173 @@ export default {
       this.processFurnace();
     },
     processFurnace() {
-      //first, copy the slots and quantities from the input
-      let output = [...this.selected];
-      let output_qty = [...this.quantities];
-
-      this.result_type = "success";
-
-      //get the max amount of fuel burned
-      let fuelBurned = 0;
-      for (let i = 0; i < 6; i++) {
-        if (output[i] == "wood" && output_qty[i] > fuelBurned) {
-          fuelBurned = output_qty[i];
-        }
-      }
-
-      //for each source material slot, get the quantity burned, reduce the input quantity, and increase the output quantity
-      for (var i = 0; i < 5; i++) {
-        let input = this.selected[i];
-        if (
-          Object.keys(this.transformations).indexOf(input) > -1 &&
-          !output.includes(this.transformations[input])
-        ) {
-          //find first empty index
-          let idx = output.indexOf("");
-          if (idx == -1) {
-            this.result =
-              "Furnace will stop immediately due to lack of space for byproduct of " +
-              input +
-              ".";
-            this.result_type = "failure";
-            break;
-          } else {
-            //add the byproduct to this index
-            output[idx] = this.transformations[input];
-
-            //reduce the quantity by the amount burned
-            let burned = Math.round(fuelBurned / this.woodCost[input]);
-            if (input == "wood") burned = fuelBurned;
-            burned = burned > output_qty[i] ? output_qty[i] : burned;
-            output_qty[i] = output_qty[i] - burned;
-            output_qty[idx] = burned;
-          }
-        } else if (Object.keys(this.transformations).indexOf(input) > -1) 
-        {
-          let outputslot = output.indexOf(this.transformations[input]);
-          output[outputslot] = this.transformations[input];
-
-          //reduce the quantity by the amount burned
-          let burned = Math.round(fuelBurned / this.woodCost[input]);
-          if (input == "wood") burned = fuelBurned;
-          burned = burned > output_qty[i] ? output_qty[i] : burned;
-          output_qty[i] = output_qty[i] - burned;
-          output_qty[outputslot] += burned;
-        }
-      }
+      let {output, output_qty, fuel_burned, result_type } =
+        this.calculateFurnaceBreakpoint(this.selected, this.quantities, 0);
 
       this.output_quantities = [...output_qty];
       this.output = [...output];
-      this.fuelBurned = fuelBurned;
+      this.result_type = result_type;
+      this.fuelBurned = fuel_burned;
+    },
+    //recursive method which for a given furnace input and quantity, outputs the furnace output and output quantities of the next breakpoint
+    calculateFurnaceBreakpoint(inputs, quantities, fuel_burned) {
+      let result_type = "success";
+
+      //copy the arrays
+      let outputs = [...inputs];
+      let output_qty = [...quantities];
+
+      //holds the minimum quantity to reduce
+      let distributeQty = {
+        wood: 0,
+        metal: 0,
+        sulfur: 0,
+        hqm: 0,
+      };
+
+      //holds the speed multiplier (i.e. how many stacks of each input material there are)
+      //for example, if metal is in 2 slots, it will generate output materials twice as fast
+      let distributeMultiplier = {
+        wood: 0,
+        metal: 0,
+        sulfur: 0,
+        hqm: 0,
+      };
+
+      //holds the output slot for given input material
+      let outputSlots = {
+        wood: -1,
+        metal: -1,
+        sulfur: -1,
+        hqm: -1,
+      };
+
+      //get the max wood stack (==> fuel burned) and the MINIMUM stack for each input material
+      let fuelBurned = 0;
+      for (let i = 0; i < 6; i++) {
+        if (outputs[i] == "wood" && output_qty[i] > fuelBurned) {
+          fuelBurned = output_qty[i];
+        }
+        if (Object.keys(this.distributeQty).indexOf(outputs[i]) > -1) {
+          distributeMultiplier[outputs[i]]++;
+          if (distributeQty[outputs[i]] > output_qty[i]) {
+            distributeQty[outputs[i]] = output_qty[i];
+          }
+        }
+      }
+
+      //if max wood is 0, the end of iteration is reached => return success
+      if (fuelBurned == 0) return [outputs, output_qty, fuelBurned, result_type];
+
+      //find the output slot for each input material
+      for (let i = 0; i < 6; i++) {
+        let input = outputs[i];
+        //if there is no output slot for this input material
+        if (
+          Object.keys(this.transformations).indexOf(input) > -1 &&
+          !outputs.includes(this.transformations[input])
+        ) {
+          //find first empty index
+          let idx = outputs.indexOf("");
+          if (idx == -1) {
+            result_type = "failure";
+            break;
+          } else {
+            //add the byproduct to this index
+            outputs[idx] = this.transformations[input];
+            outputSlots[input] = idx;
+          }
+          //if there already is an output slot for this material
+        } else if (Object.keys(this.transformations).indexOf(input) > -1) 
+        {
+          let outputSlot = -1;
+          //find an output slot with less than 1000 qty in it
+          while(outputSlot < 6)
+          {
+            let new_slot = outputs.indexOf(this.transformations[input], outputSlot);
+            //there is no further slot ==> failure
+            if(new_slot == -1)
+            {
+              result_type = "failure";
+              break;
+            }
+            if(output_qty[new_slot] < 1000)
+            {
+              //this slot works
+              outputSlots[input] = new_slot
+              break;
+            }
+            //iteration has not changed the slot, so there is no remaining free slot
+            if(new_slot == outputSlot)
+            {
+              result_type = "failure";
+              break;
+            }
+            //otherwise the output slot that was found is full => keep iterating
+          }
+        }
+        //if a failure point has been reached while assigning slots, stop iteration
+        return [outputs, output_qty, fuelBurned, result_type];
+      }
+
+      //if there is no immediate failure or success point, the next step is to find the minimum amount of fuel steps that can be processed before a breakpoint is reached (no wood, 1000 resources in an output slot, or an empty input slot)
+      //baseline minimum is the amount of fuel total
+      let minFuel = fuelBurned
+      for(let i = 0; i < 6; i++)
+      {
+        //for an input material
+        if(Object.keys(this.distributeQty).indexOf(outputs[i]) > -1)
+        {
+          //breakpoint is reached if all material is burned, which is number of material * wood required to process 1
+          if(output_qty[i] * this.transformations[outputs[i]] < minFuel) minFuel = Math.round(output_qty[i] * this.transformations[outputs[i]]);
+        }
+        //for an output material
+        else
+        {
+          let material = this.reverse_transformations[outputs[i]]
+          //breakpoint is reached either if we can process the full minimum stack
+          if(output_qty[i] + distributeQty[material] * distributeMultiplier[material] < 1000)
+            if(distributeQty[material] * this.woodCost[material] < minFuel) 
+              minFuel = Math.round(distributeQty[material] * this.woodCost[material])
+          //if not, process until this stack fills 
+          else 
+          {
+            let stackFill = 1000 - output_qty[i];
+            if(stackFill * this.woodCost[material] / distributeMultiplier[material] < minFuel) minFuel = Math.round(stackFill * this.woodCost[material] / distributeMultiplier[material])
+          }
+        }
+      } 
+
+      //we should now be able to safely burn minFuel amount of wood and send the results to the next iteration
+      //these results are not rounded to preserve partially processed materials until return
+      for(let i = 0; i < 6; i++)
+      {
+        //for an input material
+        if(Object.keys(this.distributeQty).indexOf(outputs[i]) > -1)
+        {
+          //remove material steps equivalent to wood 
+          output_qty[i] = output_qty[i] - minFuel * this.woodCost[outputs[i]]
+        }
+        //for an output material
+        else
+        {
+          //add material steps equivalent to wood burned
+          let material = this.reverse_transformations[outputs[i]]
+          output_qty[i] = output_qty[i] + minFuel * this.woodCost[material] * this.distributeMultiplier[material]
+        }
+      }
+
+      //call recursively
+      return this.calculateFurnaceBreakpoint(outputs, output_qty, fuel_burned + minFuel);
     },
   },
-  computed:
-  {
-    furnaceTime()
-    {
-      var date = new Date(null)
-      date.setSeconds(this.fuelBurned * 2)
-      return date.toISOString().substr(11, 8)
-    }
-  }
+  computed: {
+    furnaceTime() {
+      var date = new Date(null);
+      date.setSeconds(this.fuelBurned * 2);
+      return date.toISOString().substr(11, 8);
+    },
+  },
 };
 </script>
 
