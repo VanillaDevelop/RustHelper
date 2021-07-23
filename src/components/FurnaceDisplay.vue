@@ -218,19 +218,29 @@ export default {
             outputs[idx] = this.transformations[input];
             outputSlots[input] = idx;
           }
-          //if there already is an output slot for this material
+          //if there already is an output slot for this input material
         } else if (Object.keys(this.transformations).indexOf(input) > -1) 
         {
           let outputSlot = -1;
           //find an output slot with less than 1000 qty in it
           while(outputSlot < 6)
           {
-            let new_slot = outputs.indexOf(this.transformations[input], outputSlot > -1 ? outputSlot : 0);
+            let new_slot = outputs.indexOf(this.transformations[input], outputSlot > -1 ? outputSlot+1 : 0);
             //there is no further slot ==> failure
             if(new_slot == -1)
             {
-              result_type = "failure";
-              break;
+              //try to find an empty slot and assign that, otherwise failure
+              let empty_slot = outputs.indexOf('')
+              if (empty_slot == -1) 
+              {
+                result_type = "failure";
+                break;
+              }
+              else
+              {
+                outputSlots[input] = empty_slot;
+                outputs[empty_slot] = this.transformations[input];
+              }
             }
             if(output_qty[new_slot] < 1000)
             {
@@ -245,6 +255,7 @@ export default {
               break;
             }
             //otherwise the output slot that was found is full => keep iterating
+            outputSlot = new_slot;
           }
         }
         //if a failure point has been reached while assigning slots, stop iteration
@@ -267,8 +278,8 @@ export default {
           //breakpoint is reached if all material is burned, which is number of material * wood required to process 1
           if(output_qty[i] * this.woodCost[outputs[i]] < minFuel) minFuel = Math.round(output_qty[i] * this.woodCost[outputs[i]]);
         }
-        //for an output material
-        else if(outputs[i] != '')
+        //for an output material which is an outputSlot for its corresponding material
+        else if(outputs[i] != '' && outputSlots[this.reverse_transformations[outputs[i]]] == i)
         {
           let material = this.reverse_transformations[outputs[i]]
           //check if we can process the current multiplier without reaching 1000 in the stack
@@ -303,8 +314,8 @@ export default {
           //remove material steps equivalent to wood burned
           output_qty[i] = output_qty[i] - minFuel / this.woodCost[outputs[i]]
         }
-        //for an output material
-        else
+        //for an output material which corresopnds to the input material
+        else if(outputSlots[this.reverse_transformations[outputs[i]]] == i)
         {
           //add material steps equivalent to wood burned
           let material = this.reverse_transformations[outputs[i]]
