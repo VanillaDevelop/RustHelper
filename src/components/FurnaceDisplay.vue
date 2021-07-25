@@ -1,53 +1,68 @@
 <template>
   <b-row class="mb-3">
-    <b-col offset-lg="3" lg="6">
+    <b-col offset-xl="3" xl="6" offset-lg="2" lg="8">
       <div class="furnaceDisplay d-block pt-3">
-        <div class="w-100 d-flex">
-          <span v-for="n in 6" :key="n">
-            <div class="mx-1">
-              <b-dropdown id="dropdown-1" class="m-md-2" style="width: 80px; height: 40px" variant="light">
-                <template slot="button-content">
-                  <span v-if="selected[n - 1] == ''"></span>
-                  <span v-else>
-                    <img :src="require('@/assets/' + selected[n - 1] + '.png')" width="30" />
-                  </span>
-                </template>
-                <b-dropdown-item :key="''" @click="updateMaterial(n - 1, '')">None</b-dropdown-item>
-                <b-dropdown-item v-for="material in materials" :key="material" @click="updateMaterial(n - 1, material)">
-                  <img :src="require('@/assets/' + material + '.png')" width="40" />
-                </b-dropdown-item>
-              </b-dropdown>
+        <div class="d-flex">
+          <div class="row furnaceInput">
+            <div v-for="n in 6" :key="n" class="col singleInput">
+              <div class="mx-1">
+                <b-dropdown id="dropdown-1" class="m-md-2 dditem" variant="light">
+                  <template slot="button-content">
+                    <span v-if="selected[n - 1] == ''"></span>
+                    <span v-else>
+                      <img :src="require('@/assets/' + selected[n - 1] + '.png')" class="ddimg" />
+                    </span>
+                  </template>
+                  <b-dropdown-item :key="''" @click="updateMaterial(n - 1, '')">None</b-dropdown-item>
+                  <b-dropdown-item v-for="material in materials" :key="material" @click="updateMaterial(n - 1, material)">
+                    <img :src="require('@/assets/' + material + '.png')" width="40" />
+                  </b-dropdown-item>
+                </b-dropdown>
+              </div>
+              <div class="mx-1 mt-1">
+                <b-form-input
+                  placeholder="Qty."
+                  class="dditem"
+                  v-model="quantities[n - 1]"
+                  :number="true"
+                  type="number"
+                  min="0"
+                  max="1000"
+                  step="1"
+                  @change="fixQty(n - 1)"
+                />
+              </div>
             </div>
-            <div class="mx-1 mt-1">
-              <b-form-input
-                placeholder="Qty."
-                style="width: 80px"
-                v-model="quantities[n - 1]"
-                :number="true"
-                type="number"
-                min="0"
-                max="1000"
-                step="1"
-                @change="fixQty(n - 1)"
-              />
-            </div>
-          </span>
+          </div>
         </div>
         <div class="d-block mt-3 mx-1">
+          <h6>Output</h6>
           <div v-if="!producesOutput">Waiting for input...</div>
           <div v-else>
             <div>
               <span v-for="(mat, idx) in output" :key="idx">
-                <span v-if="mat != ''">
-                  <img :src="require('@/assets/' + mat + '.png')" width="30" />
+                <span v-if="mat != ''" class="mr-3">
+                  <img :src="require('@/assets/' + mat + '.png')" width="30" class="border" />
                   {{ output_quantities[idx] }}
+                </span>
+                <span v-else class="mr-3">
+                  <img :src="require('@/assets/nothing.png')" width="30" class="border" />
+                  0
                 </span>
               </span>
             </div>
-            <div>Output is reached after {{ furnaceTime }}</div>
-            <div class="alert alert-warning mt-2" v-if="warning_message != ''">
-              <strong>Warning:</strong>
-              {{ warning_message }}
+            <div>
+              Output is reached after {{ furnaceTime }}.
+              <div class="alert alert-warning mt-2" v-if="warning_message != ''">
+                <strong>Warning:</strong>
+                {{ warning_message }}
+              </div>
+              <div class="mt-1">
+                <b-button variant="primary">
+                  <b-icon-play></b-icon-play>
+                  Start Timer
+                </b-button>
+              </div>
             </div>
           </div>
         </div>
@@ -226,7 +241,15 @@ export default {
 
       //if min wood is 0 or -1, there is nothing to be done, so we can just return what we initially got
       if (distributeQty["wood"] < 1)
-        return [inputs, quantities, fuel_burned, ""];
+      {
+        //make sure no empty slots are left over
+        let empty_removed = [...inputs];
+        for (let i = 0; i < 6; i++)
+        {
+          if (quantities[i] == 0) empty_removed[i] = '';
+        }
+        return [empty_removed, quantities, fuel_burned, ""];
+      }
 
       //if a failure point has been reached while assigning slots, stop iteration
       if (warning_message != "")
@@ -321,6 +344,16 @@ export default {
   display: flex;
 }
 
+.furnaceInput {
+  padding: 0;
+  padding-left: 15px;
+  width: 100%;
+}
+
+.singleInput {
+  padding: 0;
+}
+
 .calculateButton {
   margin-left: auto;
 }
@@ -331,5 +364,21 @@ export default {
 
 .m-md-2 {
   margin: 0 !important;
+}
+
+.dditem {
+  width: 100%;
+  padding: 0;
+  height: 40px;
+}
+
+.ddimg {
+  width: 25px;
+}
+
+@media (min-width: 768px) {
+  .ddimg {
+    width: 30px;
+  }
 }
 </style>
