@@ -57,11 +57,14 @@
                 <strong>Warning:</strong>
                 {{ warning_message }}
               </div>
-              <div class="mt-1">
-                <b-button variant="primary">
+              <div class="mt-1" v-if="finish_time == 0">
+                <b-button variant="primary" @click="calculateFinishTime()">
                   <b-icon-play></b-icon-play>
                   Start Timer
                 </b-button>
+              </div>
+              <div class="mt-1" v-else>
+                {{ finishTimer }}
               </div>
             </div>
           </div>
@@ -103,8 +106,18 @@ export default {
       output_quantities: [0, 0, 0, 0, 0, 0],
       result: "",
       fuel_burned: 0,
+      finish_time: 0,
+      now: Date.now(),
       warning_message: ""
     };
+  },
+  created()
+  {
+    var self = this
+    setInterval(function ()
+    {
+      self.now = Date.now()
+    }, 1000)
   },
   methods: {
     updateMaterial(idx, material)
@@ -316,6 +329,12 @@ export default {
 
       //call recursively
       return this.calculateFurnaceBreakpoint(outputs, output_qty, fuel_burned + minFuel);
+    },
+
+    calculateFinishTime()
+    {
+      this.finish_time = new Date(Date.now());
+      this.finish_time.setSeconds(this.finish_time.getSeconds() + this.fuel_burned * 2);
     }
   },
   computed: {
@@ -329,6 +348,16 @@ export default {
     producesOutput()
     {
       return !this.output.every(item => item == 0);
+    },
+
+    finishTimer()
+    {
+      if(this.finish_time > 0)
+      {
+        var date = new Date(this.finish_time - this.now);
+        return date.toISOString().substr(11, 8);
+      }
+      return 0;
     }
   }
 };
