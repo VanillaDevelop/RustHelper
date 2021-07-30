@@ -104,6 +104,7 @@ export default {
       quantities: [0, 0, 0, 0, 0, 0],
       output: ["", "", "", "", "", ""],
       output_quantities: [0, 0, 0, 0, 0, 0],
+      timeUpdateInterval: null,
       result: "",
       fuel_burned: 0,
       finish_time: 0,
@@ -335,7 +336,18 @@ export default {
     {
       this.finish_time = new Date(Date.now());
       this.finish_time.setSeconds(this.finish_time.getSeconds() + this.fuel_burned * 2);
+      this.timeUpdateInterval = setInterval(() => this.updateFinishTime(), 1000)
+    },
+
+    updateFinishTime()
+    {
+      if(this.finish_time - this.now < 0)
+      {
+        this.finish_time = 0;
+        clearInterval(this.timeUpdateInterval);
+      }
     }
+
   },
   computed: {
     furnaceTime()
@@ -352,12 +364,12 @@ export default {
 
     finishTimer()
     {
-      if(this.finish_time > 0)
+      if(this.finish_time - this.now > 0)
       {
         var date = new Date(this.finish_time - this.now);
         return date.toISOString().substr(11, 8);
       }
-      return 0;
+      return new Date(0).toISOString().substr(11, 8);
     }
   }
 };
