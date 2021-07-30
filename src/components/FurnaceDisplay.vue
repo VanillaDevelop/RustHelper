@@ -51,21 +51,21 @@
                 </span>
               </span>
             </div>
-            <div>
-              Output is reached after {{ furnaceTime }}.
-              <div class="alert alert-warning mt-2" v-if="warning_message != ''">
-                <strong>Warning:</strong>
-                {{ warning_message }}
-              </div>
-              <div class="mt-1" v-if="finish_time == 0">
-                <b-button variant="primary" @click="calculateFinishTime()">
-                  <b-icon-play></b-icon-play>
-                  Start Timer
-                </b-button>
-              </div>
-              <div class="mt-1" v-else>
-                {{ finishTimer }}
-              </div>
+            <div class="alert alert-warning mt-2 mr-2" v-if="warning_message != ''">
+              <strong>Warning:</strong>
+              {{ warning_message }}
+            </div>
+
+            <h6 class="mt-2 mb-0">Timer</h6>
+            <div class="mt-1" v-if="finish_time == 0">
+              Output is reached after {{ furnaceTime }}. <br />
+              <b-button variant="primary" @click="calculateFinishTime()">
+                <b-icon-play></b-icon-play>
+                Start Timer
+              </b-button>
+            </div>
+            <div class="mt-1" v-else>
+              {{ finishTimer }}
             </div>
           </div>
         </div>
@@ -341,9 +341,15 @@ export default {
 
     updateFinishTime()
     {
-      if(this.finish_time - this.now < 0)
+      if (this.finish_time - this.now < 0)
       {
+        var audio = new Audio(require('@/assets/ding.mp3'))
+        audio.play();
         this.finish_time = 0;
+        this.selected = this.output;
+        this.quantities = this.output_quantities;
+        this.processFurnace();
+
         clearInterval(this.timeUpdateInterval);
       }
     }
@@ -364,7 +370,7 @@ export default {
 
     finishTimer()
     {
-      if(this.finish_time - this.now > 0)
+      if (this.finish_time - this.now > 0)
       {
         var date = new Date(this.finish_time - this.now);
         return date.toISOString().substr(11, 8);
@@ -379,6 +385,7 @@ export default {
 .furnaceDisplay {
   background-color: rgba(255, 0, 0, 0.452);
   border-radius: 10px;
+  border: 1px solid rgb(194, 0, 0);
   align-items: center;
   padding-left: 5px;
   padding-bottom: 15px;
@@ -415,6 +422,10 @@ export default {
 
 .ddimg {
   width: 25px;
+}
+
+.border {
+  border-radius: 5px;
 }
 
 @media (min-width: 768px) {
