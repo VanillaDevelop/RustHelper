@@ -7,7 +7,27 @@ export default new Vuex.Store({
   state: {
     servers: [],
     selectedServerIndex: -1,
-    maxServerId: -1
+    maxServerId: -1,
+    materials: ["wood", "metal", "sulfur", "hqm", "charcoal", "mfrags", "sfrags", "hqmfrags"],
+    transformations: {
+      wood: "charcoal",
+      metal: "mfrags",
+      sulfur: "sfrags",
+      hqm: "hqmfrags"
+    },
+    reverse_transformations: {
+      charcoal: "wood",
+      mfrags: "metal",
+      sfrags: "sulfur",
+      hqmfrags: "hqm"
+    },
+    //wood cost to transform a source material into its byproduct
+    woodCost: {
+      wood: 4 / 3,
+      metal: 5,
+      sulfur: 2.5,
+      hqm: 10
+    },
   },
   mutations: 
   {

@@ -1,7 +1,7 @@
 <template>
   <div class="row furnaceInput">
     <div v-for="n in 6" :key="n" class="col singleInput px-1">
-      <b-dropdown class="m-0 dditem" variant="light">
+      <b-dropdown class="dditem" variant="light">
         <template slot="button-content">
           <span v-if="selected[n - 1] == ''">
             <img :src="require('@/assets/nothing.png')" class="ddimg" />
@@ -33,6 +33,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
 export default
   {
     name: "FurnaceInput",
@@ -41,21 +42,12 @@ export default
       selected: Array,
       quantities: Array
     },
-    data: () =>
-    {
-      return {
-        materials: ["wood", "metal", "sulfur", "hqm", "charcoal", "mfrags", "sfrags", "hqmfrags"],
-        selected: ["", "", "", "", "", ""],
-        quantities: [0, 0, 0, 0, 0, 0],
-      }
-    },
     methods:
     {
       updateMaterial(idx, material)
       {
         this.$set(this.selected, idx, material);
         if (material == "") this.$set(this.quantities, idx, 0);
-        this.$emit('materials', this.selected)
       },
 
       fixQty(idx)
@@ -63,22 +55,24 @@ export default
         if (this.quantities[idx] > 1000)
         {
           this.$set(this.quantities, idx, 1000);
-        } else if (this.quantities[idx] < 0)
+        }
+        else if (this.quantities[idx] < 0)
         {
           this.$set(this.quantities, idx, 0);
         }
-
         if (this.selected[idx] == "") this.$set(this.quantities, idx, 0);
 
         this.$set(this.quantities, idx, Math.trunc(this.quantities[idx]));
-        this.$emit('quantities', this.quantities)
       },
+    },
+    computed:
+    {
+      ...mapState(['materials']),
     }
   }
 </script>
 
 <style scoped>
-
 .furnaceInput {
   padding: 0;
   padding-left: 15px;

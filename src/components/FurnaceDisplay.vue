@@ -1,6 +1,6 @@
 <template>
   <div class="furnaceDisplay d-block pt-3 pl-2">
-    <furnace-input @materials="updateMaterials" @quantities="updateQuantities" :selected="this.selected" :quantities="this.quantities" />
+    <furnace-input :selected="this.selected" :quantities="this.quantities" />
     <furnace-output @fuel="updateFuel" @output="updateOutput" @outputQty="updateOutputQty" :selected="this.selected" :quantities="this.quantities" />
     <furnace-timer @timer="setOutputToInput" :fuel_burned="this.fuel_burned" />
   </div>
@@ -30,10 +30,6 @@ export default {
       this.selected = this.outputs;
       this.quantities = this.output_quantities;
     },
-    updateMaterials(materials)
-    {
-      this.selected = materials;
-    },
     updateOutput(materials)
     {
       this.outputs = materials;
@@ -41,10 +37,6 @@ export default {
     updateOutputQty(quantities)
     {
       this.output_quantities = quantities;
-    },
-    updateQuantities(quantities)
-    {
-      this.quantities = quantities;
     },
     updateFuel(fuel)
     {

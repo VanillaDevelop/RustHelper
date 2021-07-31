@@ -25,57 +25,36 @@
 
 
 <script>
+import { mapState } from 'vuex';
 export default {
   name: "FurnaceOutput",
   props: {
     selected: Array,
     quantities: Array
   },
-  data: () =>
-  {
-    return {
-      materials: ["wood", "metal", "sulfur", "hqm", "charcoal", "mfrags", "sfrags", "hqmfrags"],
-      transformations: {
-        wood: "charcoal",
-        metal: "mfrags",
-        sulfur: "sfrags",
-        hqm: "hqmfrags"
-      },
-      reverse_transformations: {
-        charcoal: "wood",
-        mfrags: "metal",
-        sfrags: "sulfur",
-        hqmfrags: "hqm"
-      },
-      //wood cost to transform a source material into its byproduct
-      woodCost: {
-        wood: 4 / 3,
-        metal: 5,
-        sulfur: 2.5,
-        hqm: 10
-      },
-    };
-  },
   computed:
   {
+    ...mapState(['materials', 'transformations', 'reverse_transformations', 'woodCost']),
     output()
     {
+      //make sure non-fixed quantities dont get passed into the conversion
       let fixed_qtys = [...this.quantities]
-
       for (let i = 0; i < 6; i++)
       {
-          if(fixed_qtys[i] > 1000) fixed_qtys[i] = 1000;
-          if(fixed_qtys[i] < 0) fixed_qtys[i] = 0;
-          fixed_qtys[i] = Math.round(fixed_qtys[i]);
+        if (fixed_qtys[i] > 1000) fixed_qtys[i] = 1000;
+        if (fixed_qtys[i] < 0) fixed_qtys[i] = 0;
+        fixed_qtys[i] = Math.round(fixed_qtys[i]);
       }
 
       let [output, qty, fuel, message] = this.calculateFurnaceBreakpoint(this.selected, fixed_qtys, 0);
 
+      //round the final result
       for (let i = 0; i < 6; i++)
       {
         qty[i] = Math.floor(qty[i]);
       }
 
+      //pass the output on to the main display
       this.$emit('output', output);
       this.$emit('outputQty', qty);
       this.$emit('fuel', fuel);
@@ -90,6 +69,7 @@ export default {
   methods:
   {
     //recursive method which for a given furnace input and quantity, outputs the furnace output and output quantities of the next breakpoint
+    //absolutely cracked up but it somehow works
     calculateFurnaceBreakpoint(inputs, quantities, fuel_burned)
     {
       let warning_message = "";
@@ -123,7 +103,7 @@ export default {
         hqm: -1
       };
 
-      //remove all values which have 0 as a quantity
+      //remove all slots which have 0 as a quantity from the input
       for (let i = 0; i < 6; i++)
       {
         if (output_qty[i] == 0) outputs[i] = "";
@@ -253,7 +233,7 @@ export default {
         {
           //remove material steps equivalent to wood burned
           output_qty[i] = output_qty[i] - minFuel / this.woodCost[outputs[i]];
-          if(output_qty[i] < 0) output_qty[i] = 0;
+          if (output_qty[i] < 0) output_qty[i] = 0;
         }
         //for an output material which corresopnds to the input material
         else if (outputSlots[this.reverse_transformations[outputs[i]]] == i)
