@@ -1,8 +1,8 @@
 <template>
   <div class="furnaceDisplay d-block pt-3 pl-2 m-1">
-    <furnace-input :selected="this.selected" :quantities="this.quantities" />
-    <furnace-output @fuel="updateFuel" @output="updateOutput" @outputQty="updateOutputQty" :selected="this.selected" :quantities="this.quantities" />
-    <furnace-timer @timer="setOutputToInput" @set_finish_time="setFinishTime" :fuel_burned="this.fuel_burned" :finish_time="this.finish_time"/>
+    <furnace-input :selected="this.furnace.selected" :quantities="this.furnace.quantities" />
+    <furnace-output @fuel="updateFuel" @output="updateOutput" @outputQty="updateOutputQty" :selected="this.furnace.selected" :quantities="this.furnace.quantities" />
+    <furnace-timer @timer="setOutputToInput" @set_finish_time="setFinishTime" :fuel_burned="this.furnace.fuel_burned" :finish_time="this.furnace.finish_time"/>
   </div>
 </template>
 
@@ -14,38 +14,32 @@ import FurnaceTimer from './FurnaceTimer.vue';
 export default {
   components: { FurnaceOutput, FurnaceInput, FurnaceTimer },
   name: "FurnaceDisplay",
-  data: () =>
+  props:
   {
-    return {
-      selected: ["", "", "", "", "", ""],
-      quantities: [0, 0, 0, 0, 0, 0],
-      outputs: ["", "", "", "", "", ""],
-      output_quantities: [0, 0, 0, 0, 0, 0],
-      fuel_burned: 0,
-      finish_time: new Date(null),
-    };
+    furnace: Object
   },
-  methods: {
+  methods: 
+  {
     setOutputToInput()
     {
-      this.selected = this.outputs;
-      this.quantities = this.output_quantities;
+      this.furnace.selected = this.furnace.outputs;
+      this.furnace.quantities = this.furnace.output_quantities;
     },
     updateOutput(materials)
     {
-      this.outputs = materials;
+      this.furnace.outputs = materials;
     },
     updateOutputQty(quantities)
     {
-      this.output_quantities = quantities;
+      this.furnace.output_quantities = quantities;
     },
     updateFuel(fuel)
     {
-      this.fuel_burned = fuel;
+      this.furnace.fuel_burned = fuel;
     },
     setFinishTime(finish_time)
     {
-      this.finish_time = finish_time;
+      this.furnace.finish_time = finish_time;
     }
   }
 };

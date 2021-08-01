@@ -50,7 +50,7 @@ export default new Vuex.Store({
         outputs: ["", "", "", "", "", ""],
         output_quantities: [0, 0, 0, 0, 0, 0],
         fuel_burned: 0,
-        finish_time: 0,
+        finish_time: new Date(null),
       }
       serverById.furnaces.push(furnaceState);
     },

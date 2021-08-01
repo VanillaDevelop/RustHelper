@@ -38,6 +38,18 @@ export default {
     {
       self.now = Date.now()
     }, 1000)
+
+    if (this.finish_time.valueOf() - this.now.valueOf() > 0)
+    {
+      if (this.timeUpdateInterval == null)
+      {
+        this.timeUpdateInterval = setInterval(() => this.updateFinishTime(), 1000)
+      }
+    }
+    else
+    {
+      this.$emit('set_finish_time', new Date(null));
+    }
   },
   computed:
   {
