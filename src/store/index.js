@@ -9,6 +9,7 @@ export default new Vuex.Store({
     servers: [],
     selectedServerIndex: -1,
     maxServerId: -1,
+    //static data
     materials: ["wood", "metal", "sulfur", "hqm", "charcoal", "mfrags", "sfrags", "hqmfrags"],
     transformations: {
       wood: "charcoal",
@@ -36,7 +37,22 @@ export default new Vuex.Store({
     {
       state.maxServerId += 1;
       server.id = state.maxServerId;
+      server.furnaces = [];
       state.servers.push(server);
+    },
+    addFurnace(state, serverId)
+    {
+      let serverById = state.servers.find((x) => x.id == serverId);
+
+      let furnaceState = {
+        selected: ["", "", "", "", "", ""],
+        quantities: [0, 0, 0, 0, 0, 0],
+        outputs: ["", "", "", "", "", ""],
+        output_quantities: [0, 0, 0, 0, 0, 0],
+        fuel_burned: 0,
+        finish_time: 0,
+      }
+      serverById.furnaces.push(furnaceState);
     },
     setServerId(state, id)
     {
@@ -62,6 +78,10 @@ export default new Vuex.Store({
     setSelectedServer(context, serverId)
     {
       context.commit('setServerId', serverId)
+    },
+    addFurnaceToServer(context, serverId)
+    {
+      context.commit('addFurnace', serverId)
     }
   },
   getters: {
@@ -81,6 +101,14 @@ export default new Vuex.Store({
       else
       {
         return getters.abbreviatedServerNames[state.servers.indexOf(state.servers.find((x) => x.id == state.selectedServerIndex))];
+      }
+    },
+    currentServer: state => {
+      if(state.selectedServerIndex < 0)
+      return null;
+      else
+      {
+        return state.servers.find((x) => x.id == state.selectedServerIndex);
       }
     },
     serverCount: state => { 

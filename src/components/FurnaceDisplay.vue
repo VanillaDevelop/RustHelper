@@ -1,5 +1,5 @@
 <template>
-  <div class="furnaceDisplay d-block pt-3 pl-2">
+  <div class="furnaceDisplay d-block pt-3 pl-2 m-1">
     <furnace-input :selected="this.selected" :quantities="this.quantities" />
     <furnace-output @fuel="updateFuel" @output="updateOutput" @outputQty="updateOutputQty" :selected="this.selected" :quantities="this.quantities" />
     <furnace-timer @timer="setOutputToInput" @set_finish_time="setFinishTime" :fuel_burned="this.fuel_burned" :finish_time="this.finish_time"/>
@@ -22,7 +22,7 @@ export default {
       outputs: ["", "", "", "", "", ""],
       output_quantities: [0, 0, 0, 0, 0, 0],
       fuel_burned: 0,
-      finish_time: 0,
+      finish_time: new Date(null),
     };
   },
   methods: {

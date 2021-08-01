@@ -1,7 +1,7 @@
 <template>
   <div class="mx-1">
     <h6 class="mt-2 mb-0">Timer</h6>
-    <div v-if="finish_time == 0">
+    <div v-if="finish_time.valueOf() == 0">
       <div>Output is reached after {{ furnaceTime }}.</div>
       <div class="mt-1">
         <b-button variant="primary" @click="calculateFinishTime()">
@@ -50,7 +50,7 @@ export default {
 
     finishTimer()
     {
-      if (this.finish_time - this.now > 0)
+      if (this.finish_time.valueOf() - this.now.valueOf() > 0)
       {
         var date = new Date(this.finish_time - this.now);
         return date.toISOString().substr(11, 8);
@@ -69,11 +69,11 @@ export default {
     },
     updateFinishTime()
     {
-      if (this.finish_time - this.now < 0)
+      if (this.finish_time.valueOf() - this.now.valueOf() < 0)
       {
         var audio = new Audio(require('@/assets/ding.mp3'))
         audio.play();
-        this.$emit('set_finish_time', 0)
+        this.$emit('set_finish_time', new Date(null))
         this.$emit('timer');
 
         clearInterval(this.timeUpdateInterval);
