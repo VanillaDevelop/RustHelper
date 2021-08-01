@@ -19,11 +19,15 @@
 <script>
 export default {
   name: "FurnaceTimer",
+  props:
+  {
+    finish_time: Date,
+    fuel_burned: Number
+  },
   data: function ()
   {
     return {
       now: Date.now(),
-      finish_time: 0,
       timeUpdateInterval: null
     };
   },
@@ -34,10 +38,6 @@ export default {
     {
       self.now = Date.now()
     }, 1000)
-  },
-  props:
-  {
-    fuel_burned: Number
   },
   computed:
   {
@@ -62,8 +62,9 @@ export default {
   {
     calculateFinishTime()
     {
-      this.finish_time = new Date(Date.now());
-      this.finish_time.setSeconds(this.finish_time.getSeconds() + this.fuel_burned * 2);
+      let ftime = new Date(Date.now());
+      ftime.setSeconds(ftime.getSeconds() + this.fuel_burned * 2);
+      this.$emit('set_finish_time', ftime);
       this.timeUpdateInterval = setInterval(() => this.updateFinishTime(), 1000)
     },
     updateFinishTime()
@@ -72,7 +73,7 @@ export default {
       {
         var audio = new Audio(require('@/assets/ding.mp3'))
         audio.play();
-        this.finish_time = 0;
+        this.$emit('set_finish_time', 0)
         this.$emit('timer');
 
         clearInterval(this.timeUpdateInterval);

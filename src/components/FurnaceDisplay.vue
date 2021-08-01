@@ -2,7 +2,7 @@
   <div class="furnaceDisplay d-block pt-3 pl-2">
     <furnace-input :selected="this.selected" :quantities="this.quantities" />
     <furnace-output @fuel="updateFuel" @output="updateOutput" @outputQty="updateOutputQty" :selected="this.selected" :quantities="this.quantities" />
-    <furnace-timer @timer="setOutputToInput" :fuel_burned="this.fuel_burned" />
+    <furnace-timer @timer="setOutputToInput" @set_finish_time="setFinishTime" :fuel_burned="this.fuel_burned" :finish_time="this.finish_time"/>
   </div>
 </template>
 
@@ -22,6 +22,7 @@ export default {
       outputs: ["", "", "", "", "", ""],
       output_quantities: [0, 0, 0, 0, 0, 0],
       fuel_burned: 0,
+      finish_time: 0,
     };
   },
   methods: {
@@ -42,6 +43,10 @@ export default {
     {
       this.fuel_burned = fuel;
     },
+    setFinishTime(finish_time)
+    {
+      this.finish_time = finish_time;
+    }
   }
 };
 </script>
