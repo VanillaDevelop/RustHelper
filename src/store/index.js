@@ -51,6 +51,7 @@ export default new Vuex.Store({
         output_quantities: [0, 0, 0, 0, 0, 0],
         fuel_burned: 0,
         finish_time: new Date(null),
+        active_timer: null,
       }
       serverById.furnaces.push(furnaceState);
     },
@@ -63,6 +64,11 @@ export default new Vuex.Store({
       let serverById = state.servers.find((x) => x.id == id);
       state.servers.splice(state.servers.indexOf(serverById), 1);
       state.selectedServerIndex = -1;
+    },
+    setTimer(state, payload)
+    {
+      let serverById = state.servers.find((x) => x.id == payload.serverId);
+      serverById.furnaces[payload.furnaceId].active_timer = payload.timer;
     }
   },
   actions: 
@@ -82,6 +88,10 @@ export default new Vuex.Store({
     addFurnaceToServer(context, serverId)
     {
       context.commit('addFurnace', serverId)
+    },
+    set_active_timer(context, payload)
+    {
+      context.commit('setTimer', payload)
     }
   },
   getters: {

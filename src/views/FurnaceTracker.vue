@@ -12,7 +12,7 @@
     </b-row>
     <b-row v-for="(furnace, id) in this.currentServer.furnaces" :key="id">
       <b-col offset-xl="3" xl="6" offset-lg="2" lg="8">
-        <furnace-display :furnace="furnace" />
+        <furnace-display :furnace="furnace" :serverId="currentServer.id" :furnaceId="id"/>
       </b-col>
     </b-row>
   </b-container>

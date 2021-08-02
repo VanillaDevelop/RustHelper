@@ -22,13 +22,15 @@ export default {
   props:
   {
     finish_time: Date,
-    fuel_burned: Number
+    fuel_burned: Number,
+    active_timer: Number,
+    serverId: Number,
+    furnaceId: Number,
   },
   data: function ()
   {
     return {
       now: Date.now(),
-      timeUpdateInterval: null
     };
   },
   created()
@@ -41,10 +43,11 @@ export default {
 
     if (this.finish_time.valueOf() - this.now.valueOf() > 0)
     {
-      if (this.timeUpdateInterval == null)
+      if (this.active_timer != null)
       {
-        this.timeUpdateInterval = setInterval(() => this.updateFinishTime(), 1000)
+        clearInterval(this.active_timer);
       }
+      this.$store.dispatch("set_active_timer", {serverId: this.serverId, furnaceId: this.furnaceId, timer: setInterval(() => this.updateFinishTime(), 1000)});
     }
     else
     {
@@ -77,7 +80,7 @@ export default {
       let ftime = new Date(Date.now());
       ftime.setSeconds(ftime.getSeconds() + this.fuel_burned * 2);
       this.$emit('set_finish_time', ftime);
-      this.timeUpdateInterval = setInterval(() => this.updateFinishTime(), 1000)
+      this.$store.dispatch("set_active_timer", {serverId: this.serverId, furnaceId: this.furnaceId, timer: setInterval(() => this.updateFinishTime(), 1000)});
     },
     updateFinishTime()
     {
@@ -86,9 +89,8 @@ export default {
         var audio = new Audio(require('@/assets/ding.mp3'))
         audio.play();
         this.$emit('set_finish_time', new Date(null))
-        this.$emit('timer');
-
-        clearInterval(this.timeUpdateInterval);
+        this.$emit('timer')
+        clearInterval(this.active_timer);
       }
     }
   },
