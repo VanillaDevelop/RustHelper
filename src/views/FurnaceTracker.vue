@@ -12,11 +12,31 @@
     </b-row>
     <b-row v-for="(furnace, id) in this.currentServer.furnaces" :key="id">
       <b-col offset-xl="3" xl="6" offset-lg="2" lg="8">
-        <furnace-display :furnace="furnace" :serverId="currentServer.id" :furnaceId="id"/>
+        <furnace-display :furnace="furnace" :serverId="currentServer.id" :furnaceId="id" @set-furnace-delete-id="furnaceDeletionId = id" />
       </b-col>
     </b-row>
+    <b-modal id="modal-remove-furnace" title="Remove Furnace">
+      <p>Are you sure you wish to delete this furnace? This action cannot be undone.</p>
+      <template #modal-footer="{ close }">
+        <b-button
+          variant="light"
+          @click="
+            deleteFurnace();
+            close();
+          "
+        >
+          Delete
+        </b-button>
+      </template>
+    </b-modal>
   </b-container>
 </template>
+
+<style>
+.modal-header button {
+  color: white;
+}
+</style>
 
 <script>
 import { mapGetters } from "vuex";
@@ -24,6 +44,12 @@ import FurnaceDisplay from '../components/FurnaceDisplay.vue';
 
 export default {
   components: { FurnaceDisplay },
+  data: function ()
+  {
+    return {
+      furnaceDeletionId: -1,
+    }
+  },
   computed:
   {
     ...mapGetters(["currentServer"])
@@ -33,6 +59,11 @@ export default {
     addFurnaceToServer()
     {
       this.$store.dispatch("addFurnaceToServer", this.currentServer.id);
+    },
+    deleteFurnace()
+    {
+      this.$store.dispatch("deleteFurnace", {serverId: this.currentServer.id, furnaceId: this.furnaceDeletionId});
+      this.furnaceDeletionId = -1;
     }
   }
 }

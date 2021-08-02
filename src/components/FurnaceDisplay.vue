@@ -1,8 +1,25 @@
 <template>
   <div class="furnaceDisplay d-block pt-3 pl-2 m-1">
     <furnace-input :selected="this.furnace.selected" :quantities="this.furnace.quantities" />
-    <furnace-output @fuel="updateFuel" @output="updateOutput" @outputQty="updateOutputQty" :selected="this.furnace.selected" :quantities="this.furnace.quantities" />
-    <furnace-timer @timer="setOutputToInput" @set_finish_time="setFinishTime" :fuel_burned="this.furnace.fuel_burned" :finish_time="this.finishTimeDate" :active_timer="this.furnace.active_timer" :serverId="this.serverId" :furnaceId="this.furnaceId"/>
+    <furnace-output
+      @fuel="updateFuel"
+      @output="updateOutput"
+      @outputQty="updateOutputQty"
+      :selected="this.furnace.selected"
+      :quantities="this.furnace.quantities"
+    />
+    <furnace-timer
+      @timer="setOutputToInput"
+      @set_finish_time="setFinishTime"
+      :fuel_burned="this.furnace.fuel_burned"
+      :finish_time="this.finishTimeDate"
+      :active_timer="this.furnace.active_timer"
+      :serverId="this.serverId"
+      :furnaceId="this.furnaceId"
+    />
+    <b-button variant="danger" v-b-modal.modal-remove-furnace @click.stop="$emit('set-furnace-delete-id')" class="deleteBtn">
+      <b-icon-trash-fill />
+    </b-button>
   </div>
 </template>
 
@@ -20,7 +37,7 @@ export default {
     serverId: Number,
     furnaceId: Number,
   },
-  methods: 
+  methods:
   {
     setOutputToInput()
     {
@@ -48,7 +65,7 @@ export default {
   {
     finishTimeDate()
     {
-      if(this.furnace.finish_time instanceof Date)
+      if (this.furnace.finish_time instanceof Date)
         return this.furnace.finish_time;
       else
       {
@@ -68,5 +85,11 @@ export default {
   padding-left: 5px;
   padding-bottom: 15px;
   display: flex;
+}
+
+.deleteBtn {
+  position: absolute;
+  right: 30px;
+  bottom: 15px;
 }
 </style>

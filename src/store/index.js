@@ -65,6 +65,11 @@ export default new Vuex.Store({
       state.servers.splice(state.servers.indexOf(serverById), 1);
       state.selectedServerIndex = -1;
     },
+    removeFurnace(state, payload)
+    {
+      let serverById = state.servers.find((x) => x.id == payload.serverId);
+      serverById.furnaces.splice(payload.furnaceId, 1);
+    },
     setTimer(state, payload)
     {
       let serverById = state.servers.find((x) => x.id == payload.serverId);
@@ -75,11 +80,15 @@ export default new Vuex.Store({
   {
     addServer(context, serverName)
     {
-      context.commit('addServer', {name: (serverName.length > 56) ? serverName.substring(0,56) : serverName})
+      context.commit('addServer', {name: (serverName.length > 56) ? serverName.substring(0,56) : serverName});
     },
     deleteServer(context, serverId)
     {
-      context.commit('removeServer', serverId)
+      context.commit('removeServer', serverId);
+    },
+    deleteFurnace(context, payload)
+    {
+      context.commit('removeFurnace', payload);
     },
     setSelectedServer(context, serverId)
     {
