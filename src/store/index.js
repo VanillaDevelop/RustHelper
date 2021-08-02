@@ -9,6 +9,7 @@ export default new Vuex.Store({
     servers: [],
     selectedServerIndex: -1,
     maxServerId: -1,
+    maxFurnaceId: -1,
     //static data
     materials: ["wood", "metal", "sulfur", "hqm", "charcoal", "mfrags", "sfrags", "hqmfrags"],
     transformations: {
@@ -43,8 +44,10 @@ export default new Vuex.Store({
     addFurnace(state, serverId)
     {
       let serverById = state.servers.find((x) => x.id == serverId);
+      state.maxFurnaceId = state.maxFurnaceId + 1;
 
       let furnaceState = {
+        id: state.maxFurnaceId,
         selected: ["", "", "", "", "", ""],
         quantities: [0, 0, 0, 0, 0, 0],
         outputs: ["", "", "", "", "", ""],
@@ -68,12 +71,18 @@ export default new Vuex.Store({
     removeFurnace(state, payload)
     {
       let serverById = state.servers.find((x) => x.id == payload.serverId);
-      serverById.furnaces.splice(payload.furnaceId, 1);
+      let furnaceById = serverById.furnaces.find((x) => x.id == payload.furnaceId);
+      if(furnaceById.active_timer != null)
+      {
+        clearInterval(furnaceById.active_timer);
+      }
+      serverById.furnaces.splice(serverById.furnaces.indexOf(furnaceById), 1);
     },
     setTimer(state, payload)
     {
       let serverById = state.servers.find((x) => x.id == payload.serverId);
-      serverById.furnaces[payload.furnaceId].active_timer = payload.timer;
+      let furnaceById = serverById.furnaces.find((x) => x.id == payload.furnaceId);
+      furnaceById.active_timer = payload.timer;
     }
   },
   actions: 

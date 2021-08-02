@@ -10,9 +10,9 @@
         </b-button>
       </b-col>
     </b-row>
-    <b-row v-for="(furnace, id) in this.currentServer.furnaces" :key="id">
+    <b-row v-for="furnace in this.currentServer.furnaces" :key="furnace.id">
       <b-col offset-xl="3" xl="6" offset-lg="2" lg="8">
-        <furnace-display :furnace="furnace" :serverId="currentServer.id" :furnaceId="id" @set-furnace-delete-id="furnaceDeletionId = id" />
+        <furnace-display :furnace="furnace" :serverId="currentServer.id" @set-furnace-delete-id="furnaceDeletionId = furnace.id" />
       </b-col>
     </b-row>
     <b-modal id="modal-remove-furnace" title="Remove Furnace">

@@ -15,7 +15,7 @@
       :finish_time="this.finishTimeDate"
       :active_timer="this.furnace.active_timer"
       :serverId="this.serverId"
-      :furnaceId="this.furnaceId"
+      :furnaceId="this.furnace.id"
     />
     <b-button variant="danger" v-b-modal.modal-remove-furnace @click.stop="$emit('set-furnace-delete-id')" class="deleteBtn">
       <b-icon-trash-fill />
