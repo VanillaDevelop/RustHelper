@@ -15,7 +15,7 @@
       :finish_time="this.finishTimeDate"
       :active_timer="this.furnace.active_timer"
       :serverId="this.serverId"
-      :furnaceId="this.furnace.id"
+      :furnaceId="this.furnaceId"
     />
     <b-button variant="danger" v-b-modal.modal-remove-furnace @click.stop="$emit('set-furnace-delete-id')" class="deleteBtn">
       <b-icon-trash-fill />
@@ -35,7 +35,14 @@ export default {
   {
     furnace: Object,
     serverId: Number,
-    furnaceId: Number,
+  },
+  created()
+  {
+    //if a timer expired offscreen, set the input to the output accordingly
+    if(this.furnace.has_resolved == false && this.furnace.finish_time.valueOf() < Date.now().valueOf())
+    {
+      this.setOutputToInput();
+    }
   },
   methods:
   {
@@ -43,6 +50,7 @@ export default {
     {
       this.furnace.selected = this.furnace.outputs;
       this.furnace.quantities = this.furnace.output_quantities;
+      this.$store.dispatch('set_resolved_state', {serverId: this.serverId, furnaceId: this.furnaceId, has_resolved: true})
     },
     updateOutput(materials)
     {
@@ -71,6 +79,10 @@ export default {
       {
         return new Date(this.furnace.finish_time);
       }
+    },
+    furnaceId()
+    {
+      return this.furnace.id;
     }
   }
 };

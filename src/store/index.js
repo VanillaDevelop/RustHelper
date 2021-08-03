@@ -55,6 +55,7 @@ export default new Vuex.Store({
         fuel_burned: 0,
         finish_time: new Date(null),
         active_timer: null,
+        has_resolved: true
       }
       serverById.furnaces.push(furnaceState);
     },
@@ -83,6 +84,13 @@ export default new Vuex.Store({
       let serverById = state.servers.find((x) => x.id == payload.serverId);
       let furnaceById = serverById.furnaces.find((x) => x.id == payload.furnaceId);
       furnaceById.active_timer = payload.timer;
+      furnaceById.has_resolved = false;
+    },
+    setResolvedState(state, payload)
+    {
+      let serverById = state.servers.find((x) => x.id == payload.serverId);
+      let furnaceById = serverById.furnaces.find((x) => x.id == payload.furnaceId);
+      furnaceById.has_resolved = payload.resolved;
     }
   },
   actions: 
@@ -110,6 +118,10 @@ export default new Vuex.Store({
     set_active_timer(context, payload)
     {
       context.commit('setTimer', payload)
+    },
+    set_resolved_state(context, payload)
+    {
+      context.commit('setResolvedState', payload)
     }
   },
   getters: {
