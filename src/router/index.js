@@ -20,7 +20,11 @@ const routes = [
     name: 'Overview',
     component: () => import('../views/Overview.vue')
   },
-
+  {
+    path: '/furnaces',
+    name: 'Furnace Tracker',
+    component: () => import('../views/FurnaceTracker.vue')
+  },
 ]
 
 const router = new VueRouter({
