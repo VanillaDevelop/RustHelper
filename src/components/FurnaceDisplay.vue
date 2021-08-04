@@ -10,6 +10,7 @@
     />
     <furnace-timer
       @timer="setOutputToInput"
+      @abort="abortWithoutUpdate"
       @set_finish_time="setFinishTime"
       :fuel_burned="this.furnace.fuel_burned"
       :finish_time="this.finishTimeDate"
@@ -50,6 +51,10 @@ export default {
     {
       this.furnace.selected = this.furnace.outputs;
       this.furnace.quantities = this.furnace.output_quantities;
+      this.$store.dispatch('set_resolved_state', {serverId: this.serverId, furnaceId: this.furnaceId, has_resolved: true})
+    },
+    abortWithoutUpdate()
+    {
       this.$store.dispatch('set_resolved_state', {serverId: this.serverId, furnaceId: this.furnaceId, has_resolved: true})
     },
     updateOutput(materials)
