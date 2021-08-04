@@ -1,7 +1,7 @@
 <template>
   <div class="row furnaceInput">
     <div v-for="n in 6" :key="n" class="col singleInput px-1">
-      <b-dropdown class="dditem" variant="light">
+      <b-dropdown class="dditem" variant="light" :disabled="!!disabled">
         <template slot="button-content">
           <span v-if="selected[n - 1] == ''">
             <img :src="require('@/assets/nothing.png')" class="ddimg" />
@@ -25,6 +25,7 @@
           min="0"
           max="1000"
           step="1"
+          :disabled="!!disabled"
           @change="fixQty(n - 1)"
         />
       </div>
@@ -40,7 +41,8 @@ export default
     props:
     {
       selected: Array,
-      quantities: Array
+      quantities: Array,
+      disabled: Boolean
     },
     methods:
     {

@@ -90,7 +90,7 @@ export default new Vuex.Store({
     {
       let serverById = state.servers.find((x) => x.id == payload.serverId);
       let furnaceById = serverById.furnaces.find((x) => x.id == payload.furnaceId);
-      furnaceById.has_resolved = payload.resolved;
+      furnaceById.has_resolved = payload.has_resolved;
     }
   },
   actions: 

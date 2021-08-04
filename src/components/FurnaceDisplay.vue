@@ -1,6 +1,6 @@
 <template>
   <div class="furnaceDisplay d-block pt-3 pl-2 m-1">
-    <furnace-input :selected="this.furnace.selected" :quantities="this.furnace.quantities" />
+    <furnace-input :selected="this.furnace.selected" :quantities="this.furnace.quantities" :disabled="!this.furnace.has_resolved" />
     <furnace-output
       @fuel="updateFuel"
       @output="updateOutput"
