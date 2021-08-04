@@ -52,6 +52,7 @@ export default {
       for (let i = 0; i < 6; i++)
       {
         qty[i] = Math.floor(qty[i]);
+        if(qty[i] == 0) output[i] = '';
       }
 
       //pass the output on to the main display
