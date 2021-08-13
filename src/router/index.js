@@ -25,6 +25,11 @@ const routes = [
     name: 'Furnace Tracker',
     component: () => import('../views/FurnaceTracker.vue')
   },
+  {
+    path: '/buildcost',
+    name: 'Build Cost Calculator',
+    component: () => import('../views/BuildCostCalculator.vue')
+  }
 ]
 
 const router = new VueRouter({

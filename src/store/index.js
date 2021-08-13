@@ -24,6 +24,21 @@ export default new Vuex.Store({
       sfrags: "sulfur",
       hqmfrags: "hqm"
     },
+    build_mats: [
+      ["Square Foundation", 50],
+      ["Triangle Foundation", 25],
+      ["Foundation Stairs", 25],
+      ["Square Floor", 25],
+      ["Triangle Floor", 13],
+      ["Wall", 50],
+      ["Half Wall", 50],
+      ["Low Wall", 25],
+      ["Doorway", 35],
+      ["Window", 35],
+      ["Wall Frame", 25],
+      ["Floor Frame", 25],
+      ["Stairs", 50],
+      ["Roof", 50]],
     //wood cost to transform a source material into its byproduct
     woodCost: {
       wood: 4 / 3,
