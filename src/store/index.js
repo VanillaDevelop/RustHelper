@@ -39,6 +39,81 @@ export default new Vuex.Store({
       ["Floor Frame", 25],
       ["Stairs", 50],
       ["Roof", 50]],
+    constructions: [
+      {
+        name: "Sheet Metal Double Door",
+        icon: "sheetdouble",
+        cost:
+        {
+          "wood": 600,
+          "mfrags": 300
+        }
+      },
+      {
+        name: "Wood Double Door",
+        icon: "wooddouble",
+        cost:
+        {
+          "wood": 600,
+        }
+      },
+      {
+        name: "Wooden Door",
+        icon: "wooddoor",
+        cost:
+        {
+          "wood": 300,
+        }
+      },
+      {
+        name: "Tool Cupboard",
+        icon: "tc",
+        cost:
+        {
+          "wood": 1000
+        }
+      },
+      {
+        name: "Sheet Metal Door",
+        icon: "sheetdoor",
+        cost:
+        {
+          "mfrags": 150
+        }
+      },
+      {
+        name: "Building Plan",
+        icon: "bp",
+        cost:
+        {
+          "wood": 10
+        }
+      },
+      {
+        name: "Code Lock",
+        icon: "codelock",
+        cost:
+        {
+          "mfrags": 100
+        }
+      },
+      {
+        name: "Key Lock",
+        icon: "keylock",
+        cost:
+        {
+          "wood": 100
+        }
+      },
+      {
+        name: "Metal Shop Front",
+        icon: "shopfront",
+        cost:
+        {
+          "mfrags": 250
+        }
+      }
+    ],
     //wood cost to transform a source material into its byproduct
     woodCost: {
       wood: 4 / 3,
