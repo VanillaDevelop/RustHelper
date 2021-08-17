@@ -2,6 +2,7 @@
   <b-container>
     <h1 class="text-center">Furnace Calculator</h1>
     <h4 class="text-center">{{ this.currentServer.name }}</h4>
+    <hr />
     <b-row class="mb-3">
       <b-col lg="8" offset-lg="2" class="text-center mb-2">
         <b-button variant="primary" @click="addFurnaceToServer()">

@@ -1,6 +1,7 @@
 <template>
   <b-container>
-    <h1 class="text-center mb-5">About this project</h1>
+    <h1 class="text-center">About this project</h1>
+    <hr />
     <p class="text-justify">
       The Rust Helper is a free application made available as an open source
       project. You can find the source code of the application

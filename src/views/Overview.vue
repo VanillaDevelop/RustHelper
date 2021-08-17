@@ -1,6 +1,7 @@
 <template>
   <b-container>
     <h1 class="text-center">Server Overview</h1>
+    <hr />
     <b-row class="mb-3">
       <b-col lg="8" offset-lg="2" class="text-center mb-2">
         <b-button variant="primary" v-b-modal.modal-add-server

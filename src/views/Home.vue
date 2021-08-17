@@ -2,6 +2,7 @@
   <b-container>
     <div>
       <h1 class="text-center">Rust Helper</h1>
+    <hr />
       <b-row class="mb-5">
         <b-col lg="8" offset-lg="2">
           <p class="text-justify">

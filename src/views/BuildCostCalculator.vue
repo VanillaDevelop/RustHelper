@@ -2,6 +2,16 @@
   <b-container>
     <h1 class="text-center">Build Cost Calculator</h1>
     <h4 class="text-center">{{ this.currentServer.name }}</h4>
+    <hr />
+
+    <h3>Current Build Costs</h3>
+    <div class="border rounded p-2">
+      <div v-for="(value, name) in output" :key="name">
+        <img :src="require('@/assets/' + name + '.png')" width="40" />
+        {{ value }}
+      </div>
+    </div>
+    <h3 class="text-center mt-3">Base Resources</h3>
     <b-row>
       <b-col cols="12" xl="8">
         <h4>Base Construction</h4>
@@ -39,17 +49,13 @@
           </thead>
           <tbody>
             <tr v-for="(item, index) in deployables" :key="index">
-              <td>{{ constructions[index]["name"] }}</td>
+              <td><img :src="require('@/assets/' + constructions[index]['icon'] + '.png')" width="40" /></td>
               <td><b-form-input v-model="deployables[index]" type="number" min="0" step="1" /></td>
             </tr>
           </tbody>
         </table>
       </b-col>
     </b-row>
-    <h3>Build Costs</h3>
-    <div v-for="item in output" :key="item[0]">
-      {{item}}
-    </div>
   </b-container>
 </template>
 
@@ -101,6 +107,17 @@ export default
           costs["mfrags"] += this.items[i][3] * this.build_mats[i][1];
           costs["hqm"] += Math.ceil(this.items[i][4] * this.build_mats[i][1] / 8);
         }
+        for (let i = 0; i < this.deployables.length; i++)
+        {
+          if (this.deployables[i] > 0)
+          {
+            for (let [key, value] of Object.entries(this.constructions[i]["cost"]))
+            {
+              costs[key] += value * this.deployables[i]
+            }
+          }
+        }
+
         return costs;
       }
     },

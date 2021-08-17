@@ -45,8 +45,7 @@ export default new Vuex.Store({
         icon: "sheetdouble",
         cost:
         {
-          "wood": 600,
-          "mfrags": 300
+          "mfrags": 200
         }
       },
       {
@@ -54,7 +53,7 @@ export default new Vuex.Store({
         icon: "wooddouble",
         cost:
         {
-          "wood": 600,
+          "wood": 350,
         }
       },
       {
@@ -86,7 +85,7 @@ export default new Vuex.Store({
         icon: "bp",
         cost:
         {
-          "wood": 10
+          "wood": 20
         }
       },
       {
@@ -102,7 +101,7 @@ export default new Vuex.Store({
         icon: "keylock",
         cost:
         {
-          "wood": 100
+          "wood": 75
         }
       },
       {
