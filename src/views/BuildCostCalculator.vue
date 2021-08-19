@@ -6,12 +6,18 @@
 
     <h3>Current Build Costs</h3>
     <div class="border rounded p-2">
-      <div v-for="(value, name) in output" :key="name">
+      <span v-for="(value, name) in output" :key="name">
         <img :src="require('@/assets/' + name + '.png')" width="40" />
         {{ value }}
-      </div>
+      </span>
     </div>
     <h3 class="text-center mt-3">Base Resources</h3>
+    <div class="text-center">
+      <b-button variant="primary" @click="resetBaseMaterials()">
+        <b-icon-x-circle />
+        Clear All
+      </b-button>
+    </div>
     <b-row>
       <b-col cols="12" xl="8">
         <h4>Base Construction</h4>
@@ -29,11 +35,16 @@
           <tbody>
             <tr v-for="(item, index) in items" :key="index">
               <td>{{ build_mats[index][0] }}</td>
-              <td><b-form-input v-model="item[0]" type="number" min="0" step="1" /></td>
-              <td><b-form-input v-model="item[1]" type="number" min="0" step="1" /></td>
-              <td><b-form-input v-model="item[2]" type="number" min="0" step="1" /></td>
-              <td><b-form-input v-model="item[3]" type="number" min="0" step="1" /></td>
-              <td><b-form-input v-model="item[4]" type="number" min="0" step="1" /></td>
+              <td v-for="n in [0, 1, 2, 3, 4]" :key="n">
+                <b-form-input
+                  v-model="item[n]"
+                  type="number"
+                  min="0"
+                  step="1"
+                  @keypress="(e) => updateInput(e, index, n)"
+                  @input="(e) => updateMaxlength(index, n)"
+                />
+              </td>
             </tr>
           </tbody>
         </table>
@@ -121,10 +132,35 @@ export default
         return costs;
       }
     },
+    methods:
+    {
+      resetBaseMaterials()
+      {
+        this.items = Array(Object.keys(this.build_mats).length).fill().map(() => Array(5).fill(0));
+        this.deployables = Array(this.constructions.length).fill(0);
+      },
+      updateInput(event)
+      {
+        if ((event.keyCode < 48 || event.keyCode > 57) && event.keyCode !== 8)
+        {
+          event.preventDefault();
+        }
+      },
+      updateMaxlength(i, j)
+      {
+        //this doesnt force component updates because 999 value doesn't change for long enough (?) to cause a rerender
+        //really annoying bug ngl
+        if (this.items[i][j] > 999) 
+        {
+          let fixRow = [...this.items[i]];
+          fixRow.splice(j,1,999)
+          this.$set(this.items, i, fixRow);
+        }
+      }
+    },
     mounted: function ()
     {
-      this.items = Array(Object.keys(this.build_mats).length).fill().map(() => Array(5).fill(0))
-      this.deployables = Array(this.constructions.length).fill(0);
+      this.resetBaseMaterials();
     }
   }
 </script>
