@@ -89,6 +89,14 @@ export default new Vuex.Store({
         }
       },
       {
+        name: "Hammer",
+        icon: "hammer",
+        cost:
+        {
+          "wood": 100
+        }
+      },
+      {
         name: "Code Lock",
         icon: "codelock",
         cost:
