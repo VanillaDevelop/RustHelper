@@ -11,45 +11,19 @@
         {{ value }}
       </span>
     </div>
-    <h3 class="text-center mt-3">Base Resources</h3>
-    <div class="text-center">
-      <b-button variant="primary" @click="resetBaseMaterials()">
-        <b-icon-x-circle />
-        Clear All
-      </b-button>
-    </div>
+    <h3 class="mt-3">Base Resources</h3>
+    <b-button variant="primary" @click="resetBaseMaterials()">
+      <b-icon-x-circle />
+      Clear All
+    </b-button>
+    
     <b-row>
-      <b-col cols="12" xl="8">
-        <h4>Base Construction</h4>
-        <table id="table-baseconstructions" class="table table-light table-striped">
-          <thead class="thead-dark">
-            <tr>
-              <th>Item</th>
-              <th>Twig</th>
-              <th>Wood</th>
-              <th>Stone</th>
-              <th>Metal</th>
-              <th>HQM</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(item, index) in items" :key="index">
-              <td>{{ build_mats[index][0] }}</td>
-              <td v-for="n in [0, 1, 2, 3, 4]" :key="n">
-                <b-form-input
-                  v-model="item[n]"
-                  type="number"
-                  min="0"
-                  step="1"
-                  @keypress="(e) => updateInput(e, index, n)"
-                  @input="(e) => updateMaxlength(index, n)"
-                />
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <b-col cols="12" xl="6">
+        <h4>Add Materials</h4>
+        <v-select :options="this.construction_names"></v-select>
+        <input />
       </b-col>
-      <b-col cols="12" xl="4">
+      <b-col cols="12" xl="6">
         <h4>Deployables</h4>
         <table class="table table-light table-striped">
           <thead class="thead-dark">
@@ -75,8 +49,9 @@ h4 {
   margin-bottom: 10px;
 }
 
-#table-baseconstructions {
-  min-width: 690px !important;
+.v-select
+{
+  background-color: rgb(255, 255, 255);
 }
 </style>
 
@@ -88,15 +63,18 @@ export default
     {
       return {
         //placeholder arrays because the real array can only be computed once computed properties are available
-        items: [0],
-        deployables: [0],
+        shopping_cart: [],
       }
     },
     computed:
     {
       ...mapGetters(["currentServer"]),
       ...mapState(["build_mats", "constructions"]),
-      output()
+      construction_names()
+      {
+        return this.build_mats.map(a => a[0]);
+      },
+      /*output()
       {
         let costs =
         {
@@ -130,7 +108,7 @@ export default
         }
 
         return costs;
-      }
+      }*/
     },
     methods:
     {
@@ -153,7 +131,7 @@ export default
         if (this.items[i][j] > 999) 
         {
           let fixRow = [...this.items[i]];
-          fixRow.splice(j,1,999)
+          fixRow.splice(j, 1, 999)
           this.$set(this.items, i, fixRow);
         }
       }
@@ -161,6 +139,6 @@ export default
     mounted: function ()
     {
       this.resetBaseMaterials();
-    }
+    },
   }
 </script>
