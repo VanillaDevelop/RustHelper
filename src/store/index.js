@@ -25,20 +25,62 @@ export default new Vuex.Store({
       hqmfrags: "hqm"
     },
     build_mats: [
-      ["Square Foundation", 200],
-      ["Triangle Foundation", 100],
-      ["Foundation Stairs", 100],
-      ["Square Floor", 100],
-      ["Triangle Floor", 50],
-      ["Wall", 200],
-      ["Half Wall", 200],
-      ["Low Wall", 100],
-      ["Doorway", 140],
-      ["Window", 140],
-      ["Wall Frame", 100],
-      ["Floor Frame", 100],
-      ["Stairs", 200],
-      ["Roof", 200]],
+      {
+        name: "Square Foundation",
+        base_cost: 200
+      },
+      {
+        name: "Triangle Foundation",
+        base_cost: 100
+      },
+      {
+        name: "Foundation Stairs",
+        base_cost: 100
+      },
+      {
+        name: "Square Floor",
+        base_cost: 100
+      },
+      {
+        name: "Triangle Floor",
+        base_cost: 50
+      },
+      {
+        name: "Wall",
+        base_cost: 200
+      },
+      {
+        name: "Half Wall",
+        base_cost: 200
+      },
+      {
+        name: "Low Wall",
+        base_cost: 100
+      },
+      {
+        name: "Doorway",
+        base_cost: 140
+      },
+      {
+        name: "Window",
+        base_cost: 140
+      },
+      {
+        name: "Wall Frame",
+        base_cost: 100
+      },
+      {
+        name: "Floor Frame",
+        base_cost: 100
+      },
+      {
+        name: "Stairs",
+        base_cost: 200
+      },
+      {
+        name: "Roof",
+        base_cost: 200
+      }],
     constructions: [
       {
         name: "Sheet Metal Double Door",
