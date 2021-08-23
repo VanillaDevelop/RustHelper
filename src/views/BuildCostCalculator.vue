@@ -22,16 +22,16 @@
         <b-row>
           <b-col cols="12" xl="6" lg="12">
             Item
-            <v-select :options="this.build_mats" label="name" :model="this.selected_material"></v-select>
+            <v-select :options="this.build_mats" label="name" v-model="selected_material"></v-select>
           </b-col>
           <b-col cols="12" xl="4" lg="6">
             Tier
-            <v-select :options="['Twig', 'Wood', 'Stone', 'Metal', 'HQM']" :model="this.selected_tier"></v-select>
+            <v-select :options="['Twig', 'Wood', 'Stone', 'Metal', 'HQM']" v-model="selected_tier"></v-select>
           </b-col>
           <b-col cols="12" xl="2" lg="6">
             Quantity
             <br />
-            <b-input @change="updateMaterialMaxLength" @keypress="updateInput" :model="material_qty" />
+            <b-input @change="updateMaterialMaxLength" @keypress="updateInput" v-model="material_qty" />
           </b-col>
         </b-row>
         <b-button variant="primary" @click="addMaterialToCart()" class="mt-2">
@@ -43,7 +43,7 @@
         <b-row>
           <b-col cols="12" md="6">
             Item
-            <v-select :options="this.constructions" label="name" v-model="this.selected_deployable"></v-select>
+            <v-select :options="this.constructions" label="name" v-model="selected_deployable"></v-select>
           </b-col>
           <b-col cols="12" md="6">
             Quantity
@@ -66,7 +66,20 @@
               <th>Remove</th>
             </tr>
           </thead>
-          <tbody></tbody>
+          <tbody>
+            <tr v-for="item in shopping_cart" :key="item.name + ' - ' + item.tier">
+              <td>
+                {{ item.name }}
+                <span v-if="item.tier != ''">- {{ item.tier }}</span>
+              </td>
+              <td>{{ item.quantity }}</td>
+              <td>
+                <b-button variant="danger">
+                  <b-icon-trash-fill />
+                </b-button>
+              </td>
+            </tr>
+          </tbody>
         </table>
       </b-col>
     </b-row>
@@ -112,26 +125,13 @@ export default
           "hqm": 0
         }
 
-        //this prevents errors in indexing before mounted is run
-
-        /*for (let i = 0; i < this.shopping_cart.length; i++)
+        this.shopping_cart.forEach(item => 
         {
-          costs["wood"] += Math.ceil(this.items[i][0] * this.build_mats[i][1] / 4);
-          costs["wood"] += this.items[i][1] * this.build_mats[i][1];
-          costs["stone"] += this.items[i][2] * this.build_mats[i][1] * 1.5;
-          costs["mfrags"] += this.items[i][3] * this.build_mats[i][1];
-          costs["hqm"] += Math.ceil(this.items[i][4] * this.build_mats[i][1] / 8);
-        }
-        for (let i = 0; i < this.deployables.length; i++)
-        {
-          if (this.deployables[i] > 0)
+          for (let cost in item.costs)
           {
-            for (let [key, value] of Object.entries(this.constructions[i]["cost"]))
-            {
-              costs[key] += value * this.deployables[i]
-            }
+            costs[cost] += item.costs[cost];
           }
-        }*/
+        })
 
         return costs;
       }
@@ -170,7 +170,9 @@ export default
         let entry = this.shopping_cart.find(element => element.name == this.selected_material.name && element.tier == this.selected_tier)
         if (entry != null)
         {
-          entry.quantity += this.material_qty;
+          let index = this.shopping_cart.indexOf(entry)
+          entry.quantity += parseInt(this.material_qty);
+          this.$set(this.shopping_cart, index, entry);
         }
         else
         {
@@ -178,27 +180,23 @@ export default
           if (this.selected_tier == "Twig")
             cost["wood"] = Math.ceil(this.selected_material.base_cost / 4)
           else if (this.selected_tier == "Wood")
-            cost["wood"] = this.selected_material.base_cost;
+            cost["wood"] = parseInt(this.selected_material.base_cost);
           else if (this.selected_tier == "Stone")
             cost["stone"] = this.selected_material.base_cost * 1.5;
           else if (this.selected_tier == "Metal")
-            cost["mfrags"] = this.selected_material.base_cost;
+            cost["mfrags"] = parseInt(this.selected_material.base_cost);
           else if (this.selected_tier == "HQM")
             cost["hqm"] = Math.ceil(this.selected_material.base_cost / 8);
 
 
           this.shopping_cart.push({
-            name: this.selected_material,
+            name: this.selected_material.name,
             tier: this.selected_tier,
-            quantity: this.material_qty,
+            quantity: parseInt(this.material_qty),
             costs: cost
           })
         }
       }
-    },
-    mounted: function ()
-    {
-      this.resetBaseMaterials();
     },
   }
 </script>
