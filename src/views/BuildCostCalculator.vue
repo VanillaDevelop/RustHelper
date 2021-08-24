@@ -51,7 +51,7 @@
             <b-input @change="updateDeployableMaxLength" @keypress="updateInput" v-model="deployable_qty" />
           </b-col>
         </b-row>
-        <b-button variant="primary" @click="addMaterialToCart()" class="mt-2">
+        <b-button variant="primary" @click="addDeployableToCart()" class="mt-2">
           <b-icon-plus-circle-fill />
           Add to Resources
         </b-button>
@@ -62,19 +62,27 @@
           <thead class="thead-dark">
             <tr>
               <th>Item</th>
-              <th>Amount</th>
-              <th>Remove</th>
+              <th style="width: 50px">Amount</th>
+              <th style="width: 50px">Remove</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="item in shopping_cart" :key="item.name + ' - ' + item.tier">
+              <td>{{ item.name }} - {{ item.tier }}</td>
+              <td class="text-center">{{ item.quantity }}</td>
+              <td class="text-center">
+                <b-button variant="danger" size="sm">
+                  <b-icon-trash-fill />
+                </b-button>
+              </td>
+            </tr>
+            <tr v-for="item in shopping_cart_deployable" :key="item.name">
               <td>
                 {{ item.name }}
-                <span v-if="item.tier != ''">- {{ item.tier }}</span>
               </td>
-              <td>{{ item.quantity }}</td>
-              <td>
-                <b-button variant="danger">
+              <td class="text-center">{{ item.quantity }}</td>
+              <td class="text-center">
+                <b-button variant="danger" size="sm">
                   <b-icon-trash-fill />
                 </b-button>
               </td>
@@ -94,6 +102,10 @@ h4 {
 .v-select {
   background-color: rgb(255, 255, 255);
 }
+
+.vs__dropdown-toggle {
+  height: 38px;
+}
 </style>
 
 <script>
@@ -104,11 +116,12 @@ export default
     {
       return {
         shopping_cart: [],
+        shopping_cart_deployable: [],
         material_qty: 0,
         deployable_qty: 0,
         selected_material: null,
         selected_tier: "",
-        selected_deployable: ""
+        selected_deployable: null
       }
     },
     computed:
@@ -129,7 +142,15 @@ export default
         {
           for (let cost in item.costs)
           {
-            costs[cost] += item.costs[cost];
+            costs[cost] += item.costs[cost] * item.quantity;
+          }
+        });
+
+        this.shopping_cart_deployable.forEach(item => 
+        {
+          for (let cost in item.costs)
+          {
+            costs[cost] += item.costs[cost] * item.quantity;
           }
         })
 
@@ -141,6 +162,7 @@ export default
       resetBaseMaterials()
       {
         this.shopping_cart = [];
+        this.shopping_cart_deployable = [];
       },
       updateInput(event)
       {
@@ -177,9 +199,10 @@ export default
         else
         {
           let cost = {};
-          if (this.selected_tier == "Twig")
-            cost["wood"] = Math.ceil(this.selected_material.base_cost / 4)
-          else if (this.selected_tier == "Wood")
+          //always include twig cost
+          cost["wood"] = Math.ceil(this.selected_material.base_cost / 4)
+
+          if (this.selected_tier == "Wood")
             cost["wood"] = parseInt(this.selected_material.base_cost);
           else if (this.selected_tier == "Stone")
             cost["stone"] = this.selected_material.base_cost * 1.5;
@@ -196,6 +219,33 @@ export default
             costs: cost
           })
         }
+
+        this.selected_material = null;
+        this.selected_tier = "";
+        this.material_qty = 0;
+      },
+      addDeployableToCart()
+      {
+        if (this.selected_deployable.name === "" || this.deployable_qty == 0) return;
+
+        let entry = this.shopping_cart_deployable.find(element => element.name == this.selected_deployable.name)
+        if (entry != null)
+        {
+          let index = this.shopping_cart_deployable.indexOf(entry)
+          entry.quantity += parseInt(this.deployable_qty);
+          this.$set(this.shopping_cart_deployable, index, entry);
+        }
+        else
+        {
+          this.shopping_cart_deployable.push({
+            name: this.selected_deployable.name,
+            quantity: parseInt(this.deployable_qty),
+            costs: this.selected_deployable.cost
+          })
+        }
+        
+        this.selected_deployable = null;
+        this.deployable_qty = 0;
       }
     },
   }
