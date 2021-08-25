@@ -178,6 +178,8 @@ export default new Vuex.Store({
       state.maxServerId += 1;
       server.id = state.maxServerId;
       server.furnaces = [];
+      server.shopping_cart = [];
+      server.shopping_cart_deployable = [];
       state.servers.push(server);
     },
     addFurnace(state, serverId)
@@ -230,6 +232,67 @@ export default new Vuex.Store({
       let serverById = state.servers.find((x) => x.id == payload.serverId);
       let furnaceById = serverById.furnaces.find((x) => x.id == payload.furnaceId);
       furnaceById.has_resolved = payload.has_resolved;
+    },
+    addItemToServer(state, payload)
+    {
+      let currentServer = state.servers.find((x) => x.id == state.selectedServerIndex);
+      let selected_material = payload
+      let entry = currentServer.shopping_cart.find(element => element.name == selected_material.name && element.tier == selected_material.tier)
+      if (entry != null)
+      {
+        let index = currentServer.shopping_cart.indexOf(entry)
+        entry.quantity += parseInt(selected_material.quantity);
+        currentServer.shopping_cart.splice(index, 1, entry);
+      }
+      else
+      {
+        let cost = {};
+        if (selected_material.tier == "Twig")
+          cost["wood"] = Math.ceil(selected_material.base_cost / 4)
+        if (selected_material.tier == "Wood")
+          cost["wood"] = parseInt(selected_material.base_cost);
+        else if (selected_material.tier == "Stone")
+          cost["stone"] = selected_material.base_cost * 1.5;
+        else if (selected_material.tier == "Metal")
+          cost["mfrags"] = parseInt(selected_material.base_cost);
+        else if (selected_material.tier == "HQM")
+          cost["hqm"] = Math.ceil(selected_material.base_cost / 8);
+
+
+        currentServer.shopping_cart.push({
+          name: selected_material.name,
+          tier: selected_material.tier,
+          quantity: parseInt(selected_material.quantity),
+          costs: cost,
+          twig_cost: Math.ceil(selected_material.base_cost / 4)
+        })
+      }
+    },
+    resetServerItems(state)
+    {
+      let currentServer = state.servers.find((x) => x.id == state.selectedServerIndex);
+      currentServer.shopping_cart = [];
+      currentServer.shopping_cart_deployable = [];
+    },
+    addDeployableToServer(state, payload)
+    {
+      let currentServer = state.servers.find((x) => x.id == state.selectedServerIndex);
+      let selected_deployable = payload
+      let entry = currentServer.shopping_cart_deployable.find(element => element.name == selected_deployable.name)
+      if (entry != null)
+      {
+        let index = currentServer.shopping_cart_deployable.indexOf(entry)
+        entry.quantity += parseInt(selected_deployable.quantity);
+        currentServer.shopping_cart_deployable.splice(index, 1, entry);
+      }
+      else
+      {
+        currentServer.shopping_cart_deployable.push({
+          name: selected_deployable.name,
+          quantity: parseInt(selected_deployable.quantity),
+          costs: selected_deployable.cost
+        })
+      }
     }
   },
   actions: 
@@ -261,6 +324,18 @@ export default new Vuex.Store({
     set_resolved_state(context, payload)
     {
       context.commit('setResolvedState', payload)
+    },
+    add_item_to_server(context, payload)
+    {
+      context.commit('addItemToServer', payload)
+    },
+    add_deployable_to_server(context, payload)
+    {
+      context.commit('addDeployableToServer', payload)
+    },
+    reset_server_items(context)
+    {
+      context.commit('resetServerItems')
     }
   },
   getters: {

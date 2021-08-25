@@ -115,8 +115,6 @@ export default
     data: function ()
     {
       return {
-        shopping_cart: [],
-        shopping_cart_deployable: [],
         material_qty: 0,
         deployable_qty: 0,
         selected_material: null,
@@ -128,6 +126,14 @@ export default
     {
       ...mapGetters(["currentServer"]),
       ...mapState(["build_mats", "constructions"]),
+      shopping_cart()
+      {
+        return this.currentServer.shopping_cart;
+      },
+      shopping_cart_deployable()
+      {
+        return this.currentServer.shopping_cart_deployable;
+      },
       output()
       {
         let costs =
@@ -161,8 +167,7 @@ export default
     {
       resetBaseMaterials()
       {
-        this.shopping_cart = [];
-        this.shopping_cart_deployable = [];
+          this.$store.dispatch("reset_server_items");
       },
       updateInput(event)
       {
@@ -187,38 +192,11 @@ export default
       },
       addMaterialToCart()
       {
-        if (this.selected_material.name === "" || this.selected_tier === "" || this.material_qty == 0) return;
+        if (this.selected_material == null || this.selected_tier === "" || this.material_qty == 0) return;
 
-        let entry = this.shopping_cart.find(element => element.name == this.selected_material.name && element.tier == this.selected_tier)
-        if (entry != null)
-        {
-          let index = this.shopping_cart.indexOf(entry)
-          entry.quantity += parseInt(this.material_qty);
-          this.$set(this.shopping_cart, index, entry);
-        }
-        else
-        {
-          let cost = {};
-          //always include twig cost
-          cost["wood"] = Math.ceil(this.selected_material.base_cost / 4)
-
-          if (this.selected_tier == "Wood")
-            cost["wood"] = parseInt(this.selected_material.base_cost);
-          else if (this.selected_tier == "Stone")
-            cost["stone"] = this.selected_material.base_cost * 1.5;
-          else if (this.selected_tier == "Metal")
-            cost["mfrags"] = parseInt(this.selected_material.base_cost);
-          else if (this.selected_tier == "HQM")
-            cost["hqm"] = Math.ceil(this.selected_material.base_cost / 8);
-
-
-          this.shopping_cart.push({
-            name: this.selected_material.name,
-            tier: this.selected_tier,
-            quantity: parseInt(this.material_qty),
-            costs: cost
-          })
-        }
+        this.selected_material.tier = this.selected_tier
+        this.selected_material.quantity = this.material_qty
+        this.$store.dispatch("add_item_to_server", this.selected_material);     
 
         this.selected_material = null;
         this.selected_tier = "";
@@ -226,24 +204,11 @@ export default
       },
       addDeployableToCart()
       {
-        if (this.selected_deployable.name === "" || this.deployable_qty == 0) return;
+        if (this.selected_deployable == null || this.deployable_qty == 0) return;
 
-        let entry = this.shopping_cart_deployable.find(element => element.name == this.selected_deployable.name)
-        if (entry != null)
-        {
-          let index = this.shopping_cart_deployable.indexOf(entry)
-          entry.quantity += parseInt(this.deployable_qty);
-          this.$set(this.shopping_cart_deployable, index, entry);
-        }
-        else
-        {
-          this.shopping_cart_deployable.push({
-            name: this.selected_deployable.name,
-            quantity: parseInt(this.deployable_qty),
-            costs: this.selected_deployable.cost
-          })
-        }
-        
+        this.selected_deployable.quantity = this.deployable_qty
+        this.$store.dispatch("add_deployable_to_server", this.selected_deployable);     
+
         this.selected_deployable = null;
         this.deployable_qty = 0;
       }
