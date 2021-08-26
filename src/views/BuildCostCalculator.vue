@@ -71,7 +71,7 @@
               <td>{{ item.name }} - {{ item.tier }}</td>
               <td class="text-center">{{ item.quantity }}</td>
               <td class="text-center">
-                <b-button variant="danger" size="sm">
+                <b-button variant="danger" size="sm" @click="removeItem(item)">
                   <b-icon-trash-fill />
                 </b-button>
               </td>
@@ -82,7 +82,7 @@
               </td>
               <td class="text-center">{{ item.quantity }}</td>
               <td class="text-center">
-                <b-button variant="danger" size="sm">
+                <b-button variant="danger" size="sm" @click="removeDeployable(item)">
                   <b-icon-trash-fill />
                 </b-button>
               </td>
@@ -211,6 +211,14 @@ export default
 
         this.selected_deployable = null;
         this.deployable_qty = 0;
+      },
+      removeItem(item)
+      {
+        this.$store.dispatch("remove_item", item)
+      },
+      removeDeployable(item)
+      {
+        this.$store.dispatch("remove_deployable", item)
       }
     },
   }

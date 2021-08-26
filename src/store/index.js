@@ -293,6 +293,24 @@ export default new Vuex.Store({
           costs: selected_deployable.cost
         })
       }
+    },
+    removeItem(state, payload)
+    {
+      let currentServer = state.servers.find((x) => x.id == state.selectedServerIndex);
+      let entry = currentServer.shopping_cart.find(element => element.name == payload.name && element.tier == payload.tier)
+      if(entry != null)
+      {
+        currentServer.shopping_cart.splice(currentServer.shopping_cart.indexOf(entry), 1)
+      }
+    },
+    removeDeployable(state, payload)
+    {
+      let currentServer = state.servers.find((x) => x.id == state.selectedServerIndex);
+      let entry = currentServer.shopping_cart_deployable.find(element => element.name == payload.name)
+      if(entry != null)
+      {
+        currentServer.shopping_cart_deployable.splice(currentServer.shopping_cart_deployable.indexOf(entry), 1)
+      }
     }
   },
   actions: 
@@ -336,6 +354,14 @@ export default new Vuex.Store({
     reset_server_items(context)
     {
       context.commit('resetServerItems')
+    },
+    remove_item(context, payload)
+    {
+      context.commit('removeItem', payload)
+    },
+    remove_deployable(context, payload)
+    {
+      context.commit('removeDeployable', payload)
     }
   },
   getters: {
