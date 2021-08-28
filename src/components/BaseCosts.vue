@@ -1,6 +1,7 @@
 <template>
   <div>
     <h3>Current Build Costs</h3>
+    <b-form-checkbox v-model="include_twig">Include Twig Costs</b-form-checkbox>
     <div class="border rounded p-2">
       <span v-for="(value, name) in output" :key="name">
         <img :src="require('@/assets/' + name + '.png')" width="40" />
@@ -14,6 +15,12 @@
 import { mapGetters } from "vuex";
 export default
   {
+    data: function ()
+    {
+      return {
+        include_twig: false
+      }
+    },
     computed:
     {
       ...mapGetters(["currentServer"]),
@@ -40,6 +47,10 @@ export default
           for (let cost in item.costs)
           {
             costs[cost] += item.costs[cost] * item.quantity;
+          }
+          if (this.include_twig)
+          {
+            costs["wood"] += item.twig_cost * item.quantity;
           }
         });
 
