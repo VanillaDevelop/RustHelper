@@ -51,11 +51,11 @@ export default {
     {
       this.furnace.selected = this.furnace.outputs;
       this.furnace.quantities = this.furnace.output_quantities;
-      this.$store.dispatch('set_resolved_state', {serverId: this.serverId, furnaceId: this.furnaceId, has_resolved: true})
+      this.$store.dispatch('set_resolved_state', {furnaceId: this.furnaceId, has_resolved: true})
     },
     abortWithoutUpdate()
     {
-      this.$store.dispatch('set_resolved_state', {serverId: this.serverId, furnaceId: this.furnaceId, has_resolved: true})
+      this.$store.dispatch('set_resolved_state', {furnaceId: this.furnaceId, has_resolved: true})
     },
     updateOutput(materials)
     {

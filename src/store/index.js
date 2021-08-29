@@ -182,9 +182,9 @@ export default new Vuex.Store({
       server.shopping_cart_deployable = [];
       state.servers.push(server);
     },
-    addFurnace(state, serverId)
+    addFurnace(state)
     {
-      let serverById = state.servers.find((x) => x.id == serverId);
+      let serverById = state.servers.find((x) => x.id == state.selectedServerIndex);
       state.maxFurnaceId = state.maxFurnaceId + 1;
 
       let furnaceState = {
@@ -212,7 +212,7 @@ export default new Vuex.Store({
     },
     removeFurnace(state, payload)
     {
-      let serverById = state.servers.find((x) => x.id == payload.serverId);
+      let serverById = state.servers.find((x) => x.id == state.selectedServerIndex);
       let furnaceById = serverById.furnaces.find((x) => x.id == payload.furnaceId);
       if(furnaceById.active_timer != null)
       {
@@ -222,14 +222,14 @@ export default new Vuex.Store({
     },
     setTimer(state, payload)
     {
-      let serverById = state.servers.find((x) => x.id == payload.serverId);
+      let serverById = state.servers.find((x) => x.id == state.selectedServerIndex);
       let furnaceById = serverById.furnaces.find((x) => x.id == payload.furnaceId);
       furnaceById.active_timer = payload.timer;
       furnaceById.has_resolved = false;
     },
     setResolvedState(state, payload)
     {
-      let serverById = state.servers.find((x) => x.id == payload.serverId);
+      let serverById = state.servers.find((x) => x.id == state.selectedServerIndex);
       let furnaceById = serverById.furnaces.find((x) => x.id == payload.furnaceId);
       furnaceById.has_resolved = payload.has_resolved;
     },

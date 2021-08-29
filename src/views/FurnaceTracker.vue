@@ -59,11 +59,11 @@ export default {
   {
     addFurnaceToServer()
     {
-      this.$store.dispatch("addFurnaceToServer", this.currentServer.id);
+      this.$store.dispatch("addFurnaceToServer");
     },
     deleteFurnace()
     {
-      this.$store.dispatch("deleteFurnace", {serverId: this.currentServer.id, furnaceId: this.furnaceDeletionId});
+      this.$store.dispatch("deleteFurnace", {furnaceId: this.furnaceDeletionId});
       this.furnaceDeletionId = -1;
     }
   }
