@@ -1,7 +1,7 @@
 <template>
   <div>
     <h4 class="mt-4">Resource List</h4>
-    <table class="table table-light table-striped">
+    <table class="table table-light table-striped mt-4">
       <thead class="thead-dark">
         <tr>
           <th>Item</th>
