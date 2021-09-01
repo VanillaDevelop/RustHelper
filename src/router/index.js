@@ -29,6 +29,11 @@ const routes = [
     path: '/buildcost',
     name: 'Build Cost Calculator',
     component: () => import('../views/BuildCostCalculator.vue')
+  },
+  {
+    path: '/map',
+    name: 'Server Map',
+    component: () => import('../views/MapView.vue')
   }
 ]
 

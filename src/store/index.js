@@ -10,6 +10,7 @@ export default new Vuex.Store({
     selectedServerIndex: -1,
     maxServerId: -1,
     maxFurnaceId: -1,
+    rustMapsApiKey: "",
     //static data
     materials: ["wood", "metal", "sulfur", "hqm", "charcoal", "mfrags", "sfrags", "hqmfrags"],
     transformations: {
