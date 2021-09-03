@@ -312,6 +312,10 @@ export default new Vuex.Store({
       {
         currentServer.shopping_cart_deployable.splice(currentServer.shopping_cart_deployable.indexOf(entry), 1)
       }
+    },
+    setApiKey(state, key)
+    {
+      state.rustMapsApiKey = key;
     }
   },
   actions: 
@@ -363,6 +367,10 @@ export default new Vuex.Store({
     remove_deployable(context, payload)
     {
       context.commit('removeDeployable', payload)
+    },
+    set_api_key(context, key)
+    {
+      context.commit('setApiKey', key)
     }
   },
   getters: {

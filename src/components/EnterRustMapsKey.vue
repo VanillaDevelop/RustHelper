@@ -58,6 +58,7 @@ export default
         else
         {
           this.keyError = false
+          this.$store.dispatch('set_api_key', this.rustApiKey)
         }
       }
     }

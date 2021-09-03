@@ -4,6 +4,7 @@
     <h4 class="text-center">{{ currentServerName }}</h4>
     <hr />
     <enter-rust-maps-key v-if="rustMapsApiKey == ''" />
+    <generate-map v-else />
   </b-container>
 </template>
 
@@ -16,10 +17,11 @@ h4 {
 <script>
 import { mapGetters, mapState } from 'vuex';
 import EnterRustMapsKey from '../components/EnterRustMapsKey.vue';
+import GenerateMap from '../components/GenerateMap.vue';
 
 export default
   {
-    components: { EnterRustMapsKey },
+    components: { EnterRustMapsKey, GenerateMap },
     computed:
     {
       ...mapGetters(["currentServerName"]),
