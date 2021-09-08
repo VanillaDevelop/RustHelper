@@ -53,7 +53,7 @@ export default {
       {
         clearInterval(this.active_timer);
       }
-      this.$store.dispatch("set_active_timer", { serverId: this.serverId, furnaceId: this.furnaceId, timer: setInterval(() => this.updateFinishTime(), 1000) });
+      this.$store.dispatch("set_active_timer", {furnaceId: this.furnaceId, timer: setInterval(() => this.updateFinishTime(), 1000) });
     }
     else
     {
@@ -86,7 +86,7 @@ export default {
       let ftime = new Date(Date.now());
       ftime.setSeconds(ftime.getSeconds() + this.fuel_burned * 2);
       this.$emit('set_finish_time', ftime);
-      this.$store.dispatch("set_active_timer", { serverId: this.serverId, furnaceId: this.furnaceId, timer: setInterval(() => this.updateFinishTime(), 1000) });
+      this.$store.dispatch("set_active_timer", { furnaceId: this.furnaceId, timer: setInterval(() => this.updateFinishTime(), 1000) });
     },
     updateFinishTime()
     {
