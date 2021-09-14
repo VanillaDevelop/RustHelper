@@ -5,9 +5,21 @@
       <a v-b-modal.modal-change-api-key>here</a>
       .
     </p>
+    <b-alert show variant="warning">
+      No map is associated with this server yet. To generate a map, you must enter the associated map size and seed. You can find these through
+      services like
+      <a target="_blank" href="https://playrust.io">playrust.io</a>
+      ,
+      <a target="_blank" href="https://just-wiped.net">just-wiped.net</a>
+      or
+      <a target="_blank" href="https://rustmaps.com">rustmaps.com</a>
+    </b-alert>
+    <enter-map-data />
     <b-modal id="modal-change-api-key" title="Change RustMaps.com API Key" :hide-footer="true">
-      <enter-rust-maps-key @stored="closeModal()"/>
+      <enter-rust-maps-key @stored="closeModal()" />
     </b-modal>
+
+    
   </div>
 </template>
 
@@ -15,18 +27,23 @@
 a {
   text-decoration: underline !important;
 }
+
+.alert a {
+  color: #856404 !important;
+}
 </style>
 
 <script>
+import EnterMapData from './EnterMapData.vue';
 import EnterRustMapsKey from './EnterRustMapsKey.vue'
 export default {
-  components: { EnterRustMapsKey },
-  methods: 
+  components: { EnterRustMapsKey, EnterMapData },
+  methods:
   {
-      closeModal()
-      {
-          this.$bvModal.hide('modal-change-api-key');
-      }
+    closeModal()
+    {
+      this.$bvModal.hide('modal-change-api-key');
+    }
   }
 
 }
