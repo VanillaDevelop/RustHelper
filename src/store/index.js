@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import createPersistedState from 'vuex-persistedstate';
+const request = require('request')
 
 Vue.use(Vuex)
 
@@ -181,6 +182,7 @@ export default new Vuex.Store({
       server.furnaces = [];
       server.shopping_cart = [];
       server.shopping_cart_deployable = [];
+      server.map = null;
       state.servers.push(server);
     },
     addFurnace(state)
@@ -197,7 +199,7 @@ export default new Vuex.Store({
         fuel_burned: 0,
         finish_time: new Date(null),
         active_timer: null,
-        has_resolved: true
+        has_resolved: true,
       }
       serverById.furnaces.push(furnaceState);
     },
@@ -316,6 +318,11 @@ export default new Vuex.Store({
     setApiKey(state, key)
     {
       state.rustMapsApiKey = key;
+    },
+    setMapData(state, data)
+    {
+      let currentServer = state.servers.find((x) => x.id == state.selectedServerIndex);
+      currentServer.map = data;
     }
   },
   actions: 
@@ -371,6 +378,22 @@ export default new Vuex.Store({
     set_api_key(context, key)
     {
       context.commit('setApiKey', key)
+    },
+    process_map_request(context, payload)
+    {
+      const options = {
+        url: "https://rustmaps.com/api/v2/maps/" + payload.mapSeed + "/" + payload.mapSize + "?staging=false&barren=false",
+        headers: {
+          'X-API-Key': this.state.rustMapsApiKey
+        },
+        json: true
+      }
+      request(options, (err, res, body) => {
+          if (err) { return console.log(err); }
+          console.log(body);
+          context.commit('setMapData', body);
+          alert("done")
+      });
     }
   },
   getters: {
