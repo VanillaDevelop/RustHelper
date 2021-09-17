@@ -18,6 +18,7 @@ a {
 </style>
 
 <script>
+import { mapState } from 'vuex';
 export default
   {
     data: function ()
@@ -27,12 +28,16 @@ export default
         mapSeed: '',
       }
     },
+    computed: 
+    {
+      ...mapState["selectedServerIndex"]
+    },
     methods:
     {
       sendMapRequest()
       {
         this.keyError = false;
-        this.$store.dispatch('process_map_request', {mapSize: this.mapSize, mapSeed: this.mapSeed});
+        this.$store.dispatch('process_map_request', {mapSize: this.mapSize, mapSeed: this.mapSeed, serverId: this.selectedServerIndex});
         this.$emit('stored');
       }
     }

@@ -182,7 +182,7 @@ export default new Vuex.Store({
       server.furnaces = [];
       server.shopping_cart = [];
       server.shopping_cart_deployable = [];
-      server.map = null;
+      server.mapStatus = {status: 0};
       state.servers.push(server);
     },
     addFurnace(state)
@@ -319,11 +319,11 @@ export default new Vuex.Store({
     {
       state.rustMapsApiKey = key;
     },
-    setMapData(state, data)
+    setMapRequestStatus(state, status)
     {
-      let currentServer = state.servers.find((x) => x.id == state.selectedServerIndex);
-      currentServer.map = data;
-    }
+      let server = state.servers.find((x) => x.id == status.server);
+      server.mapStatus = status.status;
+    },
   },
   actions: 
   {
@@ -381,8 +381,30 @@ export default new Vuex.Store({
     },
     process_map_request(context, payload)
     {
+      //POST request which is made to generate new rust map data
       const options = {
-        url: "https://rustmaps.com/api/v2/maps/" + payload.mapSeed + "/" + payload.mapSize + "?staging=false&barren=false",
+        url: "https://rustmaps.com/api/v2/maps/" + payload.mapSeed + "/" + payload.mapSize,
+        headers: {
+          'X-API-Key': this.state.rustMapsApiKey
+        },
+        json: true
+      }
+      request.post(options, (err, res, body) => {
+          if (err) { return console.log(err); }
+          //200 means the map will be generated, 409 means the map already existed - either way, the mapId is returned in the body as a string
+          if(res.statusCode == 200 || res.statusCode == 409)
+          {
+            //set the map request status to 1 (mapId returned, but no map data available) on the given server and no request is made
+            //TODO this function doesnt know the current serverid
+            context.commit('setMapRequestStatus', {server: payload.serverId, status: {status: 1, mapId: body.mapId, timestamp: Date.now()}});
+          }
+      });
+    },
+    update_map_request(context, mapId)
+    {
+      //GET request which is made to check if a map is ready
+      const options = {
+        url: "https://rustmaps.com/api/v2/maps/" + mapId,
         headers: {
           'X-API-Key': this.state.rustMapsApiKey
         },
@@ -390,9 +412,16 @@ export default new Vuex.Store({
       }
       request(options, (err, res, body) => {
           if (err) { return console.log(err); }
-          console.log(body);
-          context.commit('setMapData', body);
-          alert("done")
+          if(res.statusCode == 200)
+          {
+            body.is_id_only = false;
+            context.commit('setMapData', body);
+          }
+          else if(res.statusCode == 409)
+          {
+            body.is_id_only = true;
+            context.commit('setMapData', body);
+          }
       });
     }
   },

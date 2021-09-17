@@ -5,7 +5,7 @@
       <a v-b-modal.modal-change-api-key>here</a>
       .
     </p>
-    <div v-if="currentServer.map == null">
+    <div v-if="currentServer.mapStatus.status == 0">
       <b-alert show variant="warning">
         No map is associated with this server yet. To generate a map, you must enter the associated map size and seed. You can find these through
         services like
@@ -16,6 +16,9 @@
         <a target="_blank" href="https://rustmaps.com">rustmaps.com</a>
       </b-alert>
       <enter-map-data />
+    </div>
+    <div v-else-if="currentServer.mapmapStatus.status == 1 || currentServer.mapmapStatus.status == 2">
+      
     </div>
 
     <b-modal id="modal-change-api-key" title="Change RustMaps.com API Key" :hide-footer="true">
