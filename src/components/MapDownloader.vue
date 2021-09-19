@@ -1,6 +1,6 @@
 <template>
   <div class="mt-4">
-      <p>The map ID ({{this.currentServer.mapStatus.mapId}} for this server has been generated at {{this.currentServer.mapStatus.timestamp}}</p>
+      <p>The map ID ({{ currentServer.mapStatus.mapId }}) for this server has been generated {{formattedDate}}. Click <a @click.prevent="resetMapData()" href="#">here</a> to reset all map data related to this server.</p>
   </div>
 </template>
 
@@ -13,11 +13,24 @@ a {
 
 <script>
 import { mapGetters } from 'vuex';
+import moment from 'moment';
+
 export default
   {
-    computed: 
+    computed:
     {
-      ...mapGetters["currentServer"]
+      ...mapGetters(["currentServer"]),
+      formattedDate()
+      {
+        return moment(this.currentServer.mapStatus.timestamp).fromNow();
+      }
+    },
+    methods:
+    {
+      resetMapData()
+      {
+        this.$store.dispatch('reset_map_status')
+      }
     }
   }
 </script>

@@ -324,6 +324,11 @@ export default new Vuex.Store({
       let server = state.servers.find((x) => x.id == status.server);
       server.mapStatus = status.status;
     },
+    resetMapStatus(state)
+    {
+      let currentServer = state.servers.find((x) => x.id == state.selectedServerIndex);
+      currentServer.mapStatus = {status: 0}
+    }
   },
   actions: 
   {
@@ -379,6 +384,10 @@ export default new Vuex.Store({
     {
       context.commit('setApiKey', key)
     },
+    reset_map_status(context)
+    {
+      context.commit('resetMapStatus')
+    },
     process_map_request(context, payload)
     {
       //POST request which is made to generate new rust map data
@@ -389,16 +398,17 @@ export default new Vuex.Store({
         },
         json: true
       }
-      request.post(options, (err, res, body) => {
-          if (err) { return console.log(err); }
-          //200 means the map will be generated, 409 means the map already existed - either way, the mapId is returned in the body as a string
-          if(res.statusCode == 200 || res.statusCode == 409)
-          {
-            //set the map request status to 1 (mapId returned, but no map data available) on the given server and no request is made
-            //TODO this function doesnt know the current serverid
-            context.commit('setMapRequestStatus', {server: payload.serverId, status: {status: 1, mapId: body.mapId, timestamp: Date.now()}});
-          }
-      });
+      const callbackFunction = function(err,res,body,context,serverId)
+      {
+        if (err) { return console.log(err); }
+        //200 means the map will be generated, 409 means the map already existed - either way, the mapId is returned in the body as a string
+        if(res.statusCode == 200 || res.statusCode == 409)
+        {
+          //set the map request status to 1 (mapId returned, but no map data available) on the given server and no request is made
+          context.commit('setMapRequestStatus', {server: serverId, status: {status: 1, mapId: body.mapId, timestamp: Date.now()}});
+        }
+      };
+      request.post(options, (err,res,body) => callbackFunction(err,res,body,context,this.state.selectedServerIndex))
     },
     update_map_request(context, mapId)
     {

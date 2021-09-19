@@ -17,8 +17,8 @@
       </b-alert>
       <enter-map-data />
     </div>
-    <div v-else-if="currentServer.mapmapStatus.status == 1 || currentServer.mapmapStatus.status == 2">
-      
+    <div v-else-if="currentServer.mapStatus.status != 3">
+      <map-downloader />
     </div>
 
     <b-modal id="modal-change-api-key" title="Change RustMaps.com API Key" :hide-footer="true">
@@ -41,8 +41,9 @@ a {
 import { mapGetters } from 'vuex';
 import EnterMapData from './EnterMapData.vue';
 import EnterRustMapsKey from './EnterRustMapsKey.vue'
+import MapDownloader from './MapDownloader.vue';
 export default {
-  components: { EnterRustMapsKey, EnterMapData },
+  components: { EnterRustMapsKey, EnterMapData, MapDownloader },
   computed: {
     ...mapGetters(["currentServer"])
   },
