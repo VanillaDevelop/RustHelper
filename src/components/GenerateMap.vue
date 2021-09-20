@@ -17,8 +17,11 @@
       </b-alert>
       <enter-map-data />
     </div>
-    <div v-else-if="currentServer.mapStatus.status != 3">
+    <div v-else-if="currentServer.mapStatus.status != 4">
       <map-downloader />
+    </div>
+    <div v-else>
+      {{currentServer.mapStatus}}
     </div>
 
     <b-modal id="modal-change-api-key" title="Change RustMaps.com API Key" :hide-footer="true">

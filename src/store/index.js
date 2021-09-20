@@ -410,8 +410,9 @@ export default new Vuex.Store({
       };
       request.post(options, (err,res,body) => callbackFunction(err,res,body,context,this.state.selectedServerIndex))
     },
-    update_map_request(context, mapId)
+    update_map_request(context)
     {
+      let mapId = this.getters.currentServer.mapStatus.mapId
       //GET request which is made to check if a map is ready
       const options = {
         url: "https://rustmaps.com/api/v2/maps/" + mapId,
@@ -420,19 +421,37 @@ export default new Vuex.Store({
         },
         json: true
       }
-      request(options, (err, res, body) => {
-          if (err) { return console.log(err); }
-          if(res.statusCode == 200)
-          {
-            body.is_id_only = false;
-            context.commit('setMapData', body);
-          }
-          else if(res.statusCode == 409)
-          {
-            body.is_id_only = true;
-            context.commit('setMapData', body);
-          }
-      });
+      //in order to get to this point, we must have a mapStatus of the given server already present
+      let currentState = this.getters.currentServer.mapStatus;
+      //while we are having an active request, set currentStatus to 3 (active request)
+      currentState.status = 3;
+      context.commit('setMapRequestStatus', {server: this.state.selectedServerIndex, status: currentState})
+
+      const callbackFunction = function(err,res,body,context,serverId, currentState)
+      {
+        if (err) { return console.log(err); }
+        //409 means the map is being generated
+        if(res.statusCode == 409)
+        {
+          //add the "currentState" of map creation to the mapStatus
+          currentState.lastCreationState = body.currentState;
+          //set the status to 2, indicating that no request is currently active, but we do have a previous instance of a request response
+          currentState.status = 2;
+          //set this status
+          context.commit('setMapRequestStatus', {server: serverId, status: currentState});
+        }
+        else if(res.statusCode == 404) currentState.status = 1;
+        else if(res.statusCode == 200)
+        {
+          let finalState = body;
+          finalState.status = 4;
+          finalState.mapId = currentState.mapId;
+          finalState.timestamp = Date.now();
+          context.commit('setMapRequestStatus', {server: serverId, status: finalState});
+        }
+      };
+      //send the request with the given callback function
+      request(options, (err,res,body) => callbackFunction(err,res,body,context,this.state.selectedServerIndex, currentState))
     }
   },
   getters: {
