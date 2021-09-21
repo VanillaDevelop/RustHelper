@@ -410,6 +410,12 @@ export default new Vuex.Store({
       };
       request.post(options, (err,res,body) => callbackFunction(err,res,body,context,this.state.selectedServerIndex))
     },
+    reset_map_request_status(context)
+    {
+        let currentState = this.getters.currentServer.mapStatus;
+        currentState.status = 1;
+        context.commit('setMapRequestStatus', {server: this.state.selectedServerIndex, status: currentState})
+    },
     update_map_request(context)
     {
       let mapId = this.getters.currentServer.mapStatus.mapId
@@ -437,6 +443,7 @@ export default new Vuex.Store({
           currentState.lastCreationState = body.currentState;
           //set the status to 2, indicating that no request is currently active, but we do have a previous instance of a request response
           currentState.status = 2;
+          currentState.timestamp = Date.now();
           //set this status
           context.commit('setMapRequestStatus', {server: serverId, status: currentState});
         }

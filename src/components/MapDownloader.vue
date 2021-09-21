@@ -12,8 +12,15 @@
       <span v-else-if="currentServer.mapStatus.status == 3">an outgoing request for map data. Please hold on.</span>
     </p>
     <p v-if="currentServer.mapStatus.lastCreationState != null">
-      The last state for this map was <strong>{{currentServer.mapStatus.lastCreationState}}</strong>
+      The last state for this map was
+      <strong>{{ currentServer.mapStatus.lastCreationState }}</strong>
     </p>
+
+    <b-alert show variant="warning" v-if="currentServer.mapStatus.status == 3 && dateDiffGreaterTenSeconds">
+      The last outgoing request for map data happened longer than 10 seconds ago without a recorded response. You may
+      <a @click.prevent="resetMapRequest()" href="#">manually reset the map status</a>
+      to start a new request for map data, or choose to wait for a response.
+    </b-alert>
   </div>
 </template>
 
@@ -21,6 +28,10 @@
 a {
   color: white !important;
   text-decoration: underline;
+}
+
+.alert a {
+  color: #856404 !important;
 }
 </style>
 
@@ -33,7 +44,7 @@ export default
     data: function ()
     {
       return {
-
+        now: Date.now(),
       }
     },
     computed:
@@ -42,6 +53,10 @@ export default
       formattedDate()
       {
         return moment(this.currentServer.mapStatus.timestamp).fromNow();
+      },
+      dateDiffGreaterTenSeconds()
+      {
+        return (this.now - this.currentServer.mapStatus.timestamp) / 1000 > 10
       }
     },
     methods:
@@ -57,11 +72,21 @@ export default
         {
           this.$store.dispatch('update_map_request')
         }
+      },
+      resetMapRequest()
+      {
+        this.$store.dispatch('reset_map_request_status')
       }
     },
     created()
     {
+      var self = this
+
       this.interval = setInterval(() => this.updateMapDownloader(), 5000);
+      setInterval(function ()
+      {
+        self.now = Date.now()
+      }, 1000)
     },
     destroyed: function ()
     {
