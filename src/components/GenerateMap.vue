@@ -21,7 +21,7 @@
       <map-downloader />
     </div>
     <div v-else>
-      {{currentServer.mapStatus}}
+      <map-display />
     </div>
 
     <b-modal id="modal-change-api-key" title="Change RustMaps.com API Key" :hide-footer="true">
@@ -45,8 +45,9 @@ import { mapGetters } from 'vuex';
 import EnterMapData from './EnterMapData.vue';
 import EnterRustMapsKey from './EnterRustMapsKey.vue'
 import MapDownloader from './MapDownloader.vue';
+import MapDisplay from './MapDisplay.vue';
 export default {
-  components: { EnterRustMapsKey, EnterMapData, MapDownloader },
+  components: { EnterRustMapsKey, EnterMapData, MapDownloader, MapDisplay },
   computed: {
     ...mapGetters(["currentServer"])
   },
