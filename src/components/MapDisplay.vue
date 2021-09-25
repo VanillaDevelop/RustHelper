@@ -1,7 +1,12 @@
 <template>
-  <div class="mt-4">
-    <canvas id="mapCanvas" width="500" height="500"></canvas>
-    <img :src="currentServer.mapStatus.imageUrl" id="mapImage" hidden="true">
+  <div>
+    <p v-if="currentServer.mapStatus.status == 4">
+      In order to generate a new map, please click
+      <a @click.prevent="resetMapRequest()" href="#">here to manually reset the map status</a>
+      .
+    </p>
+    <canvas id="mapCanvas" width="900" height="900"></canvas>
+    <img :src="currentServer.mapStatus.imageUrl" id="mapImage" hidden="true" />
   </div>
 </template>
 
@@ -48,7 +53,7 @@ export default
         top: 0,
         selectable: false
       })
-      img.scaleToHeight(500);
+      img.scaleToHeight(900);
       canvas.add(img);
 
       this.currentServer.mapStatus.monuments.forEach(monument =>
@@ -56,15 +61,24 @@ export default
         if (!(monument.monument.startsWith("Powerline") || monument.monument.startsWith("Tunnel_Entrance") || monument.monument.startsWith("Iceberg") || monument.monument.startsWith("Power_Substation") ||
           monument.monument.startsWith("Swamp")))
         {
-          var rect = new fabric.Rect({
-            top: ((this.currentServer.mapStatus.size)/2 - monument.y) / this.currentServer.mapStatus.size * 1000 - 5,
-            left: monument.x / this.currentServer.mapStatus.size * 1000 - 5,
-            width: 10,
-            height: 10,
-            fill: 'red'
+          var rect = new fabric.Circle({
+            top: ((this.currentServer.mapStatus.size) / 2 - monument.y) / this.currentServer.mapStatus.size * 1800 - 10,
+            left: monument.x / this.currentServer.mapStatus.size * 1800 - 10,
+            radius: 10,
+            fill: 'red',
+            opacity: 0.5,
+            selectable: false
           });
-          console.log(rect.top + " - " + rect.left)
           canvas.add(rect);
+          var text = new fabric.Text(monument.monument, {
+            top: ((this.currentServer.mapStatus.size) / 2 - monument.y) / this.currentServer.mapStatus.size * 1800 + 10,
+            left: monument.x / this.currentServer.mapStatus.size * 1800,
+            fontSize: 16,
+            fontWeight: 'bold',
+            selectable: false
+          })
+          text.left = text.left - text.width/2
+          canvas.add(text)
         }
       })
     }
