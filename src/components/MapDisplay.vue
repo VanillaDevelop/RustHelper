@@ -10,14 +10,14 @@
     <b-row class="mb-3">
       <b-col cols="12" xl="4" lg="11">
         Shape
-        <v-select :options="this.shapes"></v-select>
+        <v-select :options="this.shapes" v-model="selected_shape"></v-select>
       </b-col>
       <b-col cols="12" xl="4" lg="11">
         Color
-        <v-select :options="this.colors"></v-select>
+        <v-select :options="this.colors" v-model="selected_color"></v-select>
       </b-col>
       <b-col cols="12" xl="2" lg="2">
-        <b-button variant="primary" @click="addMaterialToCart()" class="mt-4">
+        <b-button variant="primary" @click="createNewShape()" class="mt-4">
           <b-icon-plus-circle-fill />
           Add
         </b-button>
@@ -63,7 +63,9 @@ export default
       return {
         canvas: null,
         colors: ['red', 'green', 'yellow', 'white', 'black'],
-        shapes: ['triangle', 'star', 'diamond', 'circle', 'square']
+        shapes: ['triangle', 'diamond', 'circle', 'square'],
+        selected_color: 'red',
+        selected_shape: 'triangle'
       }
     },
     computed:
@@ -72,6 +74,42 @@ export default
     },
     methods:
     {
+      createNewShape()
+      {
+        var settings = {
+          top: 100,
+          left: 100,
+          width: 100,
+          height: 100,
+          fill: this.selected_color,
+          opacity: 0.5,
+        }
+        var canvobject = null
+        switch (this.selected_shape)
+        {
+          case 'triangle':
+            canvobject = new fabric.Triangle(settings);
+            break;
+
+          case 'diamond':
+            canvobject = new fabric.Polygon([{ x: 0, y: 0 },
+            { x: 35, y: 50 },
+            { x: 0, y: 100 },
+            { x: -35, y: 50 }],
+              settings);
+            break;
+
+          case 'square':
+            canvobject = new fabric.Rect(settings);
+            break;
+
+          default:
+            settings.radius = 100;
+            canvobject = new fabric.Circle(settings);
+            break;
+        }
+        this.canvas.add(canvobject)
+      },
       deleteActive(e)
       {
         if (e.keyCode === 46)
