@@ -183,6 +183,7 @@ export default new Vuex.Store({
       server.shopping_cart = [];
       server.shopping_cart_deployable = [];
       server.mapStatus = {status: 0};
+      server.customMapIcons = [];
       state.servers.push(server);
     },
     addFurnace(state)
@@ -328,6 +329,11 @@ export default new Vuex.Store({
     {
       let currentServer = state.servers.find((x) => x.id == state.selectedServerIndex);
       currentServer.mapStatus = {status: 0}
+    },
+    setCustomMapIcons(state, status)
+    {
+      let currentServer = state.servers.find((x) => x.id == state.selectedServerIndex);
+      currentServer.customMapIcons = status
     }
   },
   actions: 
@@ -459,6 +465,10 @@ export default new Vuex.Store({
       };
       //send the request with the given callback function
       request(options, (err,res,body) => callbackFunction(err,res,body,context,this.state.selectedServerIndex, currentState))
+    },
+    set_custom_map_icons(context, payload)
+    {
+      context.commit('setCustomMapIcons', payload)
     }
   },
   getters: {
