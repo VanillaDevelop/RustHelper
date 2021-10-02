@@ -29,7 +29,6 @@
     </b-button>
 
     <h5>Server Map</h5>
-    <img :src="currentServer.mapStatus.imageUrl" id="mapImage" hidden="true" />
     <canvas id="mapCanvas" width="900" height="900"></canvas>
   </div>
 </template>
@@ -167,43 +166,45 @@ export default
     mounted()
     {
       this.canvas = new fabric.Canvas('mapCanvas');
-      var img = new fabric.Image(document.getElementById('mapImage'), {
+      new fabric.Image.fromURL(this.currentServer.mapStatus.imageUrl, image =>
+      {
+        image.scaleToHeight(900)
+        this.canvas.add(image);
+
+        this.currentServer.mapStatus.monuments.forEach(monument =>
+        {
+          if (!(monument.monument.startsWith("Powerline") || monument.monument.startsWith("Tunnel_Entrance") || monument.monument.startsWith("Iceberg") || monument.monument.startsWith("Power_Substation") ||
+            monument.monument.startsWith("Swamp")))
+          {
+            var rect = new fabric.Circle({
+              top: ((this.currentServer.mapStatus.size) / 2 - monument.y) / this.currentServer.mapStatus.size * 1800 - 10,
+              left: monument.x / this.currentServer.mapStatus.size * 1800 - 10,
+              radius: 10,
+              fill: 'red',
+              opacity: 0.5,
+              selectable: false
+            });
+            this.canvas.add(rect);
+            var text = new fabric.Text(monument.monument, {
+              top: ((this.currentServer.mapStatus.size) / 2 - monument.y) / this.currentServer.mapStatus.size * 1800 + 10,
+              left: monument.x / this.currentServer.mapStatus.size * 1800,
+              fontSize: 16,
+              fontWeight: 'bold',
+              selectable: false
+            })
+            text.left = text.left - text.width / 2
+            this.canvas.add(text)
+          }
+        })
+
+        this.currentServer.customMapIcons.forEach(icon =>
+        {
+          this.createNewShape(icon.type, icon.color, icon.top, icon.left, icon.width, icon.height, icon.radius, icon.angle, icon.scaleX, icon.scaleY)
+        })
+      }, {
         left: 0,
         top: 0,
         selectable: false
-      })
-      img.scaleToHeight(900);
-      this.canvas.add(img);
-
-      this.currentServer.mapStatus.monuments.forEach(monument =>
-      {
-        if (!(monument.monument.startsWith("Powerline") || monument.monument.startsWith("Tunnel_Entrance") || monument.monument.startsWith("Iceberg") || monument.monument.startsWith("Power_Substation") ||
-          monument.monument.startsWith("Swamp")))
-        {
-          var rect = new fabric.Circle({
-            top: ((this.currentServer.mapStatus.size) / 2 - monument.y) / this.currentServer.mapStatus.size * 1800 - 10,
-            left: monument.x / this.currentServer.mapStatus.size * 1800 - 10,
-            radius: 10,
-            fill: 'red',
-            opacity: 0.5,
-            selectable: false
-          });
-          this.canvas.add(rect);
-          var text = new fabric.Text(monument.monument, {
-            top: ((this.currentServer.mapStatus.size) / 2 - monument.y) / this.currentServer.mapStatus.size * 1800 + 10,
-            left: monument.x / this.currentServer.mapStatus.size * 1800,
-            fontSize: 16,
-            fontWeight: 'bold',
-            selectable: false
-          })
-          text.left = text.left - text.width / 2
-          this.canvas.add(text)
-        }
-      })
-
-      this.currentServer.customMapIcons.forEach(icon =>
-      {
-        this.createNewShape(icon.type, icon.color, icon.top, icon.left, icon.width, icon.height, icon.radius, icon.angle, icon.scaleX, icon.scaleY)
       })
 
       window.addEventListener('keydown', this.deleteActive)
