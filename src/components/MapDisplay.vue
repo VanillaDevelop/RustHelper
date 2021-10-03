@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id="mapHolder">
     <p v-if="currentServer.mapStatus.status == 4">
       In order to generate a new map, please click
       <a @click.prevent="resetMapRequest()" href="#">here to manually reset the map status</a>
@@ -68,7 +68,10 @@ export default
         colors: ['red', 'green', 'yellow', 'white', 'black'],
         shapes: ['triangle', 'diamond', 'circle', 'square'],
         selected_color: 'red',
-        selected_shape: 'triangle'
+        selected_shape: 'triangle',
+        previousWidth: 0,
+        canvasWidth: 0,
+        image: null
       }
     },
     computed:
@@ -162,23 +165,29 @@ export default
           this.updateCustomMapObjects()
         }
       },
-    },
-    mounted()
-    {
-      this.canvas = new fabric.Canvas('mapCanvas');
-      new fabric.Image.fromURL(this.currentServer.mapStatus.imageUrl, image =>
+      resizeCanvas()
       {
-        image.scaleToHeight(900)
-        this.canvas.add(image);
+        this.redrawCanvas();
+      },
+      redrawIcons()
+      {
+        this.canvas.clear()
+        this.canvas.setDimensions({ width: this.canvasWidth, height: this.canvasWidth });
 
+        if (this.image != null) 
+        {
+          this.image.scaleToHeight(this.canvasWidth)
+          this.canvas.add(this.image);
+        }
+        
         this.currentServer.mapStatus.monuments.forEach(monument =>
         {
           if (!(monument.monument.startsWith("Powerline") || monument.monument.startsWith("Tunnel_Entrance") || monument.monument.startsWith("Iceberg") || monument.monument.startsWith("Power_Substation") ||
             monument.monument.startsWith("Swamp")))
           {
             var rect = new fabric.Circle({
-              top: ((this.currentServer.mapStatus.size) / 2 - monument.y) / this.currentServer.mapStatus.size * 1800 - 10,
-              left: monument.x / this.currentServer.mapStatus.size * 1800 - 10,
+              top: ((this.currentServer.mapStatus.size) / 2 - monument.y) / this.currentServer.mapStatus.size * this.canvasWidth * 2 - 10,
+              left: monument.x / this.currentServer.mapStatus.size * this.canvasWidth * 2 - 10,
               radius: 10,
               fill: 'red',
               opacity: 0.5,
@@ -186,8 +195,8 @@ export default
             });
             this.canvas.add(rect);
             var text = new fabric.Text(monument.monument, {
-              top: ((this.currentServer.mapStatus.size) / 2 - monument.y) / this.currentServer.mapStatus.size * 1800 + 10,
-              left: monument.x / this.currentServer.mapStatus.size * 1800,
+              top: ((this.currentServer.mapStatus.size) / 2 - monument.y) / this.currentServer.mapStatus.size * this.canvasWidth * 2 + 10,
+              left: monument.x / this.currentServer.mapStatus.size * this.canvasWidth * 2,
               fontSize: 16,
               fontWeight: 'bold',
               selectable: false
@@ -201,14 +210,36 @@ export default
         {
           this.createNewShape(icon.type, icon.color, icon.top, icon.left, icon.width, icon.height, icon.radius, icon.angle, icon.scaleX, icon.scaleY)
         })
-      }, {
-        left: 0,
-        top: 0,
-        selectable: false
-      })
+      },
+      redrawCanvas()
+      {
+        this.canvasWidth = document.getElementById('mapHolder').clientWidth;
 
+        if (this.canvas == null)
+          this.canvas = new fabric.Canvas('mapCanvas');
+        if (this.image == null)
+        {
+          new fabric.Image.fromURL(this.currentServer.mapStatus.imageUrl, image =>
+          {
+            this.image = image;
+            this.image.scaleToHeight(this.canvasWidth)
+            this.canvas.add(this.image)
+            this.canvas.sendToBack(this.image)
+          }, {
+            left: 0,
+            top: 0,
+            selectable: false
+          })
+        }
+        this.redrawIcons()
+      }
+    },
+    mounted()
+    {
+      this.redrawCanvas();
       window.addEventListener('keydown', this.deleteActive)
       window.addEventListener('mouseup', this.updateMapObjectsMouse)
+      window.addEventListener('resize', this.resizeCanvas)
     },
   }
 </script>
