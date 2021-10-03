@@ -149,7 +149,7 @@ export default
         var customObjects = []
         this.canvas.getObjects().forEach((obj) =>
         {
-          if (obj.selectable) customObjects.push({ width: obj.width, radius: obj.radius, height: obj.height, top: obj.top, left: obj.left, angle: obj.angle, type: obj.type, color: obj.fill, scaleX: obj.scaleX, scaleY: obj.scaleY });
+          if (obj.selectable) customObjects.push({ width: obj.width, radius: obj.radius, height: obj.height, top: obj.top, left: obj.left, angle: obj.angle, type: obj.type, color: obj.fill, scaleX: obj.scaleX, scaleY: obj.scaleY, canvasWidth: this.canvasWidth });
         });
         this.$store.dispatch('set_custom_map_icons', customObjects);
       },
@@ -179,7 +179,7 @@ export default
           this.image.scaleToHeight(this.canvasWidth)
           this.canvas.add(this.image);
         }
-        
+
         this.currentServer.mapStatus.monuments.forEach(monument =>
         {
           if (!(monument.monument.startsWith("Powerline") || monument.monument.startsWith("Tunnel_Entrance") || monument.monument.startsWith("Iceberg") || monument.monument.startsWith("Power_Substation") ||
@@ -208,6 +208,14 @@ export default
 
         this.currentServer.customMapIcons.forEach(icon =>
         {
+          if(icon.canvasWidth != this.canvasWidth)
+          {
+            icon.scaleX = icon.scaleX / icon.canvasWidth * this.canvasWidth;
+            icon.scaleY = icon.scaleY / icon.canvasWidth * this.canvasWidth;
+            icon.top = icon.top / icon.canvasWidth * this.canvasWidth;
+            icon.left = icon.left / icon.canvasWidth * this.canvasWidth;
+            icon.canvasWidth = this.canvasWidth;
+          }
           this.createNewShape(icon.type, icon.color, icon.top, icon.left, icon.width, icon.height, icon.radius, icon.angle, icon.scaleX, icon.scaleY)
         })
       },
