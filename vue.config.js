@@ -1,5 +1,5 @@
 module.exports = {
-    publicPath: '/rust-helper/',
+    publicPath: '/RustHelper/',
     configureWebpack: {
       devtool: 'source-map'
     }
