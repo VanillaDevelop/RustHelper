@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import createPersistedState from 'vuex-persistedstate';
+const request = require('request')
 
 Vue.use(Vuex)
 
@@ -181,6 +182,8 @@ export default new Vuex.Store({
       server.furnaces = [];
       server.shopping_cart = [];
       server.shopping_cart_deployable = [];
+      server.mapStatus = {status: 0};
+      server.customMapIcons = [];
       state.servers.push(server);
     },
     addFurnace(state)
@@ -197,7 +200,7 @@ export default new Vuex.Store({
         fuel_burned: 0,
         finish_time: new Date(null),
         active_timer: null,
-        has_resolved: true
+        has_resolved: true,
       }
       serverById.furnaces.push(furnaceState);
     },
@@ -316,6 +319,21 @@ export default new Vuex.Store({
     setApiKey(state, key)
     {
       state.rustMapsApiKey = key;
+    },
+    setMapRequestStatus(state, status)
+    {
+      let server = state.servers.find((x) => x.id == status.server);
+      server.mapStatus = status.status;
+    },
+    resetMapStatus(state)
+    {
+      let currentServer = state.servers.find((x) => x.id == state.selectedServerIndex);
+      currentServer.mapStatus = {status: 0}
+    },
+    setCustomMapIcons(state, status)
+    {
+      let currentServer = state.servers.find((x) => x.id == state.selectedServerIndex);
+      currentServer.customMapIcons = status
     }
   },
   actions: 
@@ -371,6 +389,86 @@ export default new Vuex.Store({
     set_api_key(context, key)
     {
       context.commit('setApiKey', key)
+    },
+    reset_map_status(context)
+    {
+      context.commit('resetMapStatus')
+    },
+    process_map_request(context, payload)
+    {
+      //POST request which is made to generate new rust map data
+      const options = {
+        url: "https://rustmaps.com/api/v2/maps/" + payload.mapSeed + "/" + payload.mapSize,
+        headers: {
+          'X-API-Key': this.state.rustMapsApiKey
+        },
+        json: true
+      }
+      const callbackFunction = function(err,res,body,context,serverId)
+      {
+        if (err) { return console.log(err); }
+        //200 means the map will be generated, 409 means the map already existed - either way, the mapId is returned in the body as a string
+        if(res.statusCode == 200 || res.statusCode == 409)
+        {
+          //set the map request status to 1 (mapId returned, but no map data available) on the given server and no request is made
+          context.commit('setMapRequestStatus', {server: serverId, status: {status: 1, mapId: body.mapId, timestamp: Date.now()}});
+        }
+      };
+      request.post(options, (err,res,body) => callbackFunction(err,res,body,context,this.state.selectedServerIndex))
+    },
+    reset_map_request_status(context)
+    {
+        let currentState = this.getters.currentServer.mapStatus;
+        currentState.status = 1;
+        context.commit('setMapRequestStatus', {server: this.state.selectedServerIndex, status: currentState})
+    },
+    update_map_request(context)
+    {
+      let mapId = this.getters.currentServer.mapStatus.mapId
+      //GET request which is made to check if a map is ready
+      const options = {
+        url: "https://rustmaps.com/api/v2/maps/" + mapId,
+        headers: {
+          'X-API-Key': this.state.rustMapsApiKey
+        },
+        json: true
+      }
+      //in order to get to this point, we must have a mapStatus of the given server already present
+      let currentState = this.getters.currentServer.mapStatus;
+      //while we are having an active request, set currentStatus to 3 (active request)
+      currentState.status = 3;
+      context.commit('setMapRequestStatus', {server: this.state.selectedServerIndex, status: currentState})
+
+      const callbackFunction = function(err,res,body,context,serverId, currentState)
+      {
+        if (err) { return console.log(err); }
+        //409 means the map is being generated
+        if(res.statusCode == 409)
+        {
+          //add the "currentState" of map creation to the mapStatus
+          currentState.lastCreationState = body.currentState;
+          //set the status to 2, indicating that no request is currently active, but we do have a previous instance of a request response
+          currentState.status = 2;
+          currentState.timestamp = Date.now();
+          //set this status
+          context.commit('setMapRequestStatus', {server: serverId, status: currentState});
+        }
+        else if(res.statusCode == 404) currentState.status = 1;
+        else if(res.statusCode == 200)
+        {
+          let finalState = body;
+          finalState.status = 4;
+          finalState.mapId = currentState.mapId;
+          finalState.timestamp = Date.now();
+          context.commit('setMapRequestStatus', {server: serverId, status: finalState});
+        }
+      };
+      //send the request with the given callback function
+      request(options, (err,res,body) => callbackFunction(err,res,body,context,this.state.selectedServerIndex, currentState))
+    },
+    set_custom_map_icons(context, payload)
+    {
+      context.commit('setCustomMapIcons', payload)
     }
   },
   getters: {

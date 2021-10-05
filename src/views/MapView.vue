@@ -28,6 +28,10 @@
 h4 {
   margin-bottom: 10px;
 }
+a {
+  color: white !important;
+  text-decoration: underline;
+}
 </style>
 
 <script>

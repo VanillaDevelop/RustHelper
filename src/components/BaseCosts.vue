@@ -1,7 +1,7 @@
 <template>
   <div>
     <h3>Current Build Costs</h3>
-    <b-form-checkbox v-model="include_twig">Include Twig Costs</b-form-checkbox>
+    <b-form-checkbox v-model="include_twig">Include Twig Costs for Non-Twig Items</b-form-checkbox>
     <div class="border rounded p-2">
       <span v-for="(value, name) in output" :key="name">
         <img :src="require('@/assets/' + name + '.png')" width="40" />
@@ -48,7 +48,7 @@ export default
           {
             costs[cost] += item.costs[cost] * item.quantity;
           }
-          if (this.include_twig)
+          if (this.include_twig && item.tier != "Twig")
           {
             costs["wood"] += item.twig_cost * item.quantity;
           }
