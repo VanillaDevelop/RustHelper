@@ -22,18 +22,18 @@
     </p>
 
     <h3 class="mt-5 mb-3">FAQ</h3>
-    <p>
+    <p class="text-justify">
       <strong>Is this project affiliated with Rust?</strong> <br />
       No. This project is in no way officially affiliated with the Rust
       videogame, trademark, or Facepunch Studios.
     </p>
-    <p>
+    <p class="text-justify">
       <strong>Will this project always remain free?</strong> <br />
       Yes, this is a personal side-project of mine with no intention of
       monetization. If you don't believe me, you're always free to download the
       source code and host your own version.
     </p>
-    <p>
+    <p class="text-justify">
       <strong>How is my data stored?</strong><br />
       No data is stored on the server side. All data input is stored locally on
       your computer. For this reason, no account is needed either. As long as
@@ -42,7 +42,7 @@
     </p>
 
     <h3 class="mt-5 mb-3">About me</h3>
-    <p>
+    <p class="text-justify">
       I am a student making these projects in my free time! You can read more
       about my personal projects on my
       <strong

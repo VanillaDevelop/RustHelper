@@ -13,13 +13,6 @@
   </div>
 </template>
 
-<style scoped>
-a {
-  color: white !important;
-  text-decoration: underline;
-}
-</style>
-
 <script>
 let regex_string = new RegExp("^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$");
 
