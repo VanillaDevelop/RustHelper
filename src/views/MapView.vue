@@ -24,7 +24,7 @@
   </b-container>
 </template>
 
-<style>
+<style scoped>
 h4 {
   margin-bottom: 10px;
 }
