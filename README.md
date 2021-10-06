@@ -1,6 +1,7 @@
 # Rust Helper
 Rust Helper is a free, open-source application built using Vue, meant as an assistant for the video game Rust.  
 After setting up (in production or development mode), the web app is found under http://localhost:8080/RustHelper.  
+This application is also hosted on [GitHub pages](https://vanilladevelop.github.io/RustHelper)  
 Rust Helper stores data entirely using LocalStorage, meaning no account data is needed. As long as the LocalStorage data is not cleared, data will persist while on the same machine.   
 
 Rust Helper is powered by the Vue framework, VueX state management, BootstrapVue for easy styling, v-select for more visually pleasing select boxes, and RustMaps.com for the map generation API. 
